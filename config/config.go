@@ -6,12 +6,9 @@ import (
 	"io/ioutil"
 	"os"
 	"os/user"
-)
 
-type Config struct {
-	GithubToken string `json:"github_token"`
-	JiraToken   string `json:"jira_token"`
-}
+	"git.ctrlz.es/mgdelacroix/campaigner/model"
+)
 
 func getConfigPath() (string, error) {
 	user, err := user.Current()
@@ -21,14 +18,14 @@ func getConfigPath() (string, error) {
 	return user.HomeDir + "/.campaigner", nil
 }
 
-func ReadConfig() (*Config, error) {
+func ReadConfig() (*model.Config, error) {
 	configPath, err := getConfigPath()
 	if err != nil {
 		return nil, err
 	}
 
 	if _, err := os.Stat(configPath); err != nil {
-		return &Config{}, nil
+		return &model.Config{}, nil
 	}
 
 	fileContents, err := ioutil.ReadFile(configPath)
@@ -36,7 +33,7 @@ func ReadConfig() (*Config, error) {
 		return nil, fmt.Errorf("there was a problem reading the config file: %w", err)
 	}
 
-	var config Config
+	var config model.Config
 	if err := json.Unmarshal(fileContents, &config); err != nil {
 		return nil, fmt.Errorf("there was a problem parsing the config file: %w", err)
 	}
@@ -44,7 +41,7 @@ func ReadConfig() (*Config, error) {
 	return &config, nil
 }
 
-func SaveConfig(config *Config) error {
+func SaveConfig(config *model.Config) error {
 	configPath, err := getConfigPath()
 	if err != nil {
 		return err
