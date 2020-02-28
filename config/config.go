@@ -28,7 +28,7 @@ func ReadConfig() (*Config, error) {
 	}
 
 	if _, err := os.Stat(configPath); err != nil {
-		return &Config{}, nil 
+		return &Config{}, nil
 	}
 
 	fileContents, err := ioutil.ReadFile(configPath)
