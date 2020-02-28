@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
+	"git.ctrlz.es/mgdelacroix/campaigner/cmd"
 )
 
 func main() {
-	fmt.Println("Hello world")
+	cmd.Execute()
 }
