@@ -7,13 +7,21 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var RootCmd = &cobra.Command{
-	Use:   "campaigner",
-	Short: "Create and manage Open Source campaigns",
+func RootCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "campaigner",
+		Short: "Create and manage Open Source campaigns",
+	}
+
+	cmd.AddCommand(
+		TokenCmd(),
+	)
+	
+	return cmd
 }
 
 func Execute() {
-	if err := RootCmd.Execute(); err != nil {
+	if err := RootCmd().Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
 }
