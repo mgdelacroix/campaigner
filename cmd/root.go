@@ -16,7 +16,7 @@ func RootCmd() *cobra.Command {
 	cmd.AddCommand(
 		TokenCmd(),
 	)
-	
+
 	return cmd
 }
 

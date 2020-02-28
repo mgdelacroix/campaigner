@@ -6,21 +6,21 @@ import (
 
 func TokenSetJiraCmd() *cobra.Command {
 	return &cobra.Command{
-		Use: "jira",
+		Use:   "jira",
 		Short: "Sets the value of the jira token",
 	}
 }
 
 func TokenSetGithubCmd() *cobra.Command {
 	return &cobra.Command{
-		Use: "github",
+		Use:   "github",
 		Short: "Sets the value of the github token",
 	}
 }
 
 func TokenSetCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "set",
+		Use:   "set",
 		Short: "Sets the value of the platform tokens",
 	}
 
@@ -34,7 +34,7 @@ func TokenSetCmd() *cobra.Command {
 
 func TokenCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "token",
+		Use:   "token",
 		Short: "Subcommands related to tokens",
 	}
 
