@@ -28,7 +28,7 @@ func ReadConfig() (*Config, error) {
 	}
 
 	if _, err := os.Stat(configPath); err != nil {
-		return nil, fmt.Errorf("cannot read campaigner config file: %w", err)
+		return &Config{}, nil 
 	}
 
 	fileContents, err := ioutil.ReadFile(configPath)
