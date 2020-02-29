@@ -13,6 +13,7 @@ Usage:
 
 Available Commands:
   add         Adds tickets to the campaign
+  filter      Interactively filters the current ticket list
   help        Help about any command
   init        Creates a new campaign in the current directory
   token       Subcommands related to tokens

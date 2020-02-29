@@ -1,5 +1,9 @@
 package cmd
 
+import (
+	"github.com/spf13/cobra"
+)
+
 func FilterCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "filter",
