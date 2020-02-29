@@ -44,6 +44,7 @@ Use "campaigner [command] --help" for more information about a command.
 - [x] Modify the add command to only act on `stdin`, using the
       `--grep` and `--govet` flags to distinguish how to parse the
       input.
+- [ ] Add `standalone` group of commands.
 - [ ] Add file only mode to the `add` command.
 - [ ] Add file path normalisation to the `add` command.
 - [ ] Add `--ag` to the `add` command.
