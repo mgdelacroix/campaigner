@@ -1,8 +1,9 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
-	"os/exec"
+	"os"
 	"strconv"
 	"strings"
 
@@ -12,28 +13,29 @@ import (
 	"git.ctrlz.es/mgdelacroix/campaigner/model"
 )
 
-const defaultGrepOpts = "-nrFI"
-
 func AddCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add",
-		Short: "Adds tickets to the campaign",
-		Args:  cobra.NoArgs,
-		Run:   addCmdF,
+		Short: "Adds tickets to the campaign from the output of grep/ag/govet",
+		Long: `Generates tickets for the campaign reading from the standard input the output of one of the following three commands:
+  - grep (should be run with the -n flag)
+  - ag
+  - govet (should be run with the -json flag)`,
+		Example: `  grep -nriIF --include \*.go cobra.Command | campaigner add --grep
+  ag cobra.Command | campaigner add --ag
+  govet -json ./... | campaigner add --govet`,
+		Args: cobra.NoArgs,
+		RunE: addCmdF,
 	}
 
-	cmd.Flags().StringP("dir", "d", "", "directory containing the source code")
-	_ = cmd.MarkFlagRequired("dir")
-	cmd.Flags().StringSliceP("grep", "g", []string{}, "runs a grep command to generate the tickets")
-	cmd.Flags().BoolP("case-insensitive", "i", false, "makes the search case insensitive")
-	cmd.Flags().StringSliceP("ext", "e", []string{}, "limits the grep to files with certain extensions")
-	// cmd.Flags().StringP("govet", "v", "", "runs a govet command to generate the tickets")
-	// govet bin path?
+	cmd.Flags().BoolP("ag", "a", false, "generates the tickets reading ag's output from stdin")
+	cmd.Flags().BoolP("grep", "g", false, "generates the tickets reading grep's output from stdin")
+	cmd.Flags().BoolP("govet", "v", false, "generates the tickets reading govet's output from stdin")
 
 	return cmd
 }
 
-func parseLine(line string) (*model.Ticket, error) {
+func parseGrepLine(line string) (*model.Ticket, error) {
 	// ToDo: it would be great to be able to relate a line with its
 	// parent method, at least for JS and Golang
 	parts := strings.Split(line, ":")
@@ -48,68 +50,40 @@ func parseLine(line string) (*model.Ticket, error) {
 	}
 	text := strings.Join(parts[2:], "")
 
-	return &model.Ticket{filename, lineNo, text}, nil
+	return &model.Ticket{
+		Filename: filename,
+		LineNo:   lineNo,
+		Text:     text,
+	}, nil
 }
 
-func RunGrep(dir, str string, exts []string, caseInsensitive bool) ([]*model.Ticket, error) {
-	opts := defaultGrepOpts
-	if caseInsensitive {
-		opts = opts + "i"
-	}
-
-	includes := []string{}
-	for _, ext := range exts {
-		if strings.HasPrefix(ext, ".") {
-			ext = ext[1:]
-		}
-		includes = append(includes, []string{"--include", "*." + ext}...)
-	}
-
-	args := append([]string{opts}, includes...)
-	args = append(args, str, dir)
-
-	out, err := exec.Command("grep", args...).Output()
-	if err != nil {
-		return nil, fmt.Errorf("execution of grep failed: %w", err)
-	}
-
+func parseGrep() []*model.Ticket {
 	tickets := []*model.Ticket{}
-	for _, line := range strings.Split(string(out), "\n") {
-		// ToDo: get and check error
-		ticket, _ := parseLine(line)
+	scanner := bufio.NewScanner(os.Stdin)
+	for scanner.Scan() {
+		ticket, _ := parseGrepLine(scanner.Text())
 		if ticket != nil {
 			tickets = append(tickets, ticket)
 		}
 	}
-
-	return tickets, nil
+	return tickets
 }
 
-func RunGreps(dir string, strs, exts []string, caseInsensitive bool) ([]*model.Ticket, error) {
-	tickets := []*model.Ticket{}
-	for _, str := range strs {
-		results, err := RunGrep(dir, str, exts, caseInsensitive)
-		if err != nil {
-			return nil, err
-		}
-		tickets = append(tickets, results...)
+func addCmdF(cmd *cobra.Command, _ []string) error {
+	grep, _ := cmd.Flags().GetBool("grep")
+	ag, _ := cmd.Flags().GetBool("ag")
+	govet, _ := cmd.Flags().GetBool("govet")
+
+	if !grep && !ag && !govet {
+		return fmt.Errorf("one of --grep --ag --govet flags should be active")
 	}
 
-	tickets = model.RemoveDuplicateTickets(tickets)
-	fmt.Printf("%d matches found\n", len(tickets))
-
-	return tickets, nil
-}
-
-func addCmdF(cmd *cobra.Command, _ []string) {
-	dir, _ := cmd.Flags().GetString("dir")
-	grepStrs, _ := cmd.Flags().GetStringSlice("grep")
-	extStrs, _ := cmd.Flags().GetStringSlice("ext")
-	caseInsensitive, _ := cmd.Flags().GetBool("case-insensitive")
-
-	tickets, err := RunGreps(dir, grepStrs, extStrs, caseInsensitive)
-	if err != nil {
-		ErrorAndExit(cmd, err)
+	var tickets []*model.Ticket
+	switch {
+	case grep:
+		tickets = parseGrep()
+	default:
+		return fmt.Errorf("not implemented yet")
 	}
 
 	cmp, err := campaign.Read()
@@ -123,4 +97,5 @@ func addCmdF(cmd *cobra.Command, _ []string) {
 	if err := campaign.Save(cmp); err != nil {
 		ErrorAndExit(cmd, err)
 	}
+	return nil
 }

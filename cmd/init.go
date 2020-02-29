@@ -16,7 +16,7 @@ func InitCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringP("epic", "e", "", "the epic id to associate this campaign with")
-	cmd.MarkFlagRequired("epic")
+	_ = cmd.MarkFlagRequired("epic")
 
 	return cmd
 }

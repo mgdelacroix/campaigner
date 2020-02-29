@@ -41,7 +41,7 @@ Use "campaigner [command] --help" for more information about a command.
 
 ## Roadmap
 
-- [ ] Modify the add command to only act on `stdin`, using the
+- [x] Modify the add command to only act on `stdin`, using the
       `--grep` and `--govet` flags to distinguish how to parse the
       input.
 - [ ] Add `--ag` to the `add` command.
