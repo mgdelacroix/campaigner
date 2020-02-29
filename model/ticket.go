@@ -2,6 +2,6 @@ package model
 
 type Ticket struct {
 	Filename string `json:"filename"`
-	Line     int    `json:"line"`
+	LineNo   int    `json:"line_no"`
 	Text     string `json:"text"` // needed??
 }
