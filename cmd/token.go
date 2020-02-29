@@ -8,16 +8,16 @@ import (
 
 func TokenSetJiraCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:   "jira",
-		Short: "Sets the value of the jira token",
-		Args:  cobra.ExactArgs(1),
-		RunE:  tokenSetJiraCmdF,
+		Use:     "jira USERNAME TOKEN",
+		Short:   "Sets the value of the jira token",
+		Args:    cobra.ExactArgs(2),
+		RunE:    tokenSetJiraCmdF,
 	}
 }
 
 func TokenSetGithubCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:   "github",
+		Use:   "github TOKEN",
 		Short: "Sets the value of the github token",
 		Args:  cobra.ExactArgs(1),
 		RunE:  tokenSetGithubCmdF,
@@ -57,7 +57,8 @@ func tokenSetJiraCmdF(cmd *cobra.Command, args []string) error {
 		ErrorAndExit(cmd, err)
 	}
 
-	cfg.JiraToken = args[0]
+	cfg.JiraUsername = args[0]
+	cfg.JiraToken = args[1]
 	if err := config.SaveConfig(cfg); err != nil {
 		ErrorAndExit(cmd, err)
 	}

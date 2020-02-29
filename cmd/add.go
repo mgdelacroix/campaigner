@@ -32,6 +32,8 @@ func AddCmd() *cobra.Command {
 }
 
 func parseLine(line string) (*model.Ticket, error) {
+	// ToDo: it would be great to be able to relate a line with its
+	// parent method, at least for JS and Golang
 	parts := strings.Split(line, ":")
 	if len(parts) < 3 {
 		return nil, fmt.Errorf("cannot parse line: %s", line)
