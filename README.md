@@ -44,8 +44,12 @@ Use "campaigner [command] --help" for more information about a command.
 - [x] Modify the add command to only act on `stdin`, using the
       `--grep` and `--govet` flags to distinguish how to parse the
       input.
+- [ ] Add file only mode to the `add` command.
+- [ ] Add file path normalisation to the `add` command.
 - [ ] Add `--ag` to the `add` command.
 - [ ] Add the `publish` command.
 - [ ] Add state management to the tickets and links to the jira
       issues.
 - [ ] Add the `sync` command to synchronize the issue state.
+- [ ] Add the `filter` command with a button to get context and the
+      option to add fn name.
