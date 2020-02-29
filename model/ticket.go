@@ -7,7 +7,7 @@ import (
 type Ticket struct {
 	Filename string `json:"filename"`
 	LineNo   int    `json:"line_no"`
-	Text     string `json:"text"` // needed??
+	Text     string `json:"text"`
 }
 
 func RemoveDuplicateTickets(tickets []*Ticket) []*Ticket {
