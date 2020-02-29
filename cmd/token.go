@@ -8,10 +8,10 @@ import (
 
 func TokenSetJiraCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:     "jira USERNAME TOKEN",
-		Short:   "Sets the value of the jira token",
-		Args:    cobra.ExactArgs(2),
-		RunE:    tokenSetJiraCmdF,
+		Use:   "jira USERNAME TOKEN",
+		Short: "Sets the value of the jira token",
+		Args:  cobra.ExactArgs(2),
+		RunE:  tokenSetJiraCmdF,
 	}
 }
 

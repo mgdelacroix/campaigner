@@ -1,21 +1,29 @@
 package cmd
 
 import (
+	"git.ctrlz.es/mgdelacroix/campaigner/campaign"
+	"git.ctrlz.es/mgdelacroix/campaigner/model"
+
 	"github.com/spf13/cobra"
 )
 
 func InitCmd() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "init",
 		Short: "Creates a new campaign in the current directory",
 		Args:  cobra.NoArgs,
-		RunE:  initCmdF,
+		Run:   initCmdF,
 	}
 
-	// add mandatory flags for epic, tags, etc
+	cmd.Flags().StringP("epic", "e", "", "the epic id to associate this campaign with")
+	cmd.MarkFlagRequired("epic")
+
+	return cmd
 }
 
-func initCmdF(_ *cobra.Command, _ []string) error {
-	// creates the campaign.json file
-	return nil
+func initCmdF(cmd *cobra.Command, _ []string) {
+	epic, _ := cmd.Flags().GetString("epic")
+	if err := campaign.Save(&model.Campaign{Epic: epic}); err != nil {
+		ErrorAndExit(cmd, err)
+	}
 }
