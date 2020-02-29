@@ -45,6 +45,7 @@ Use "campaigner [command] --help" for more information about a command.
       `--grep` and `--govet` flags to distinguish how to parse the
       input.
 - [ ] Add `standalone` group of commands.
+- [ ] Parametrise the atlassian API url.
 - [ ] Add file only mode to the `add` command.
 - [ ] Add file path normalisation to the `add` command.
 - [ ] Add `--ag` to the `add` command.
