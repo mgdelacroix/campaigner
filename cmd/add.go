@@ -95,6 +95,9 @@ func RunGreps(dir string, strs, exts []string, caseInsensitive bool) ([]*model.T
 		tickets = append(tickets, results...)
 	}
 
+	tickets = model.RemoveDuplicateTickets(tickets)
+	fmt.Printf("%d matches found\n", len(tickets))
+	
 	return tickets, nil
 }
 
