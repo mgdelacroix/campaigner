@@ -116,6 +116,7 @@ func addCmdF(cmd *cobra.Command, _ []string) {
 
 	// ToDo: make this skip duplicates
 	cmp.Tickets = append(cmp.Tickets, tickets...)
+	cmp.Tickets = model.RemoveDuplicateTickets(cmp.Tickets)
 
 	if err := campaign.Save(cmp); err != nil {
 		ErrorAndExit(cmd, err)
