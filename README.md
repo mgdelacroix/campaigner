@@ -38,3 +38,14 @@ Use "campaigner [command] --help" for more information about a command.
 7. Run `campaigner publish` to create the tickets in `jira` based on
    the template.
 8. Possible next step to publish the tickets from `jira` to `github`.
+
+## Roadmap
+
+- [ ] Modify the add command to only act on `stdin`, using the
+      `--grep` and `--govet` flags to distinguish how to parse the
+      input.
+- [ ] Add `--ag` to the `add` command.
+- [ ] Add the `publish` command.
+- [ ] Add state management to the tickets and links to the jira
+      issues.
+- [ ] Add the `sync` command to synchronize the issue state.
