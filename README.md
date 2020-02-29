@@ -2,6 +2,27 @@
 
 Command line tool to create and manage community campaigns.
 
+## Usage
+
+```sh
+$ campaigner --help
+Create and manage Open Source campaigns
+
+Usage:
+  campaigner [command]
+
+Available Commands:
+  add         Adds tickets to the campaign
+  help        Help about any command
+  init        Creates a new campaign in the current directory
+  token       Subcommands related to tokens
+
+Flags:
+  -h, --help   help for campaigner
+
+Use "campaigner [command] --help" for more information about a command.
+```
+
 ## Application flow
 
 1. Run `campaigner set-token` to set the tokens for `jira/github`.
