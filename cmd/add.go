@@ -26,6 +26,7 @@ func AddCmd() *cobra.Command {
 	_ = cmd.MarkFlagRequired("dir")
 	cmd.Flags().StringSliceP("grep", "g", []string{}, "runs a grep command to generate the tickets")
 	cmd.Flags().BoolP("case-insensitive", "i", false, "makes the search case insensitive")
+	cmd.Flags().StringSliceP("ext", "e", []string{}, "limits the grep to files with certain extensions")
 	// cmd.Flags().StringP("govet", "v", "", "runs a govet command to generate the tickets")
 	// govet bin path?
 
@@ -50,15 +51,26 @@ func parseLine(line string) (*model.Ticket, error) {
 	return &model.Ticket{filename, lineNo, text}, nil
 }
 
-func RunGrep(dir, str string, caseInsensitive bool) ([]*model.Ticket, error) {
+func RunGrep(dir, str string, exts []string, caseInsensitive bool) ([]*model.Ticket, error) {
 	opts := defaultGrepOpts
 	if caseInsensitive {
 		opts = opts + "i"
 	}
 
-	out, err := exec.Command("grep", opts, str, dir).Output()
+	includes := []string{}
+	for _, ext := range exts {
+		if strings.HasPrefix(ext, ".") {
+			ext = ext[1:]
+		}
+		includes = append(includes, []string{"--include", "*." + ext}...)
+	}
+
+	args := append([]string{opts}, includes...)
+	args = append(args, str, dir)
+
+	out, err := exec.Command("grep", args...).Output()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("execution of grep failed: %w", err)
 	}
 
 	tickets := []*model.Ticket{}
@@ -73,10 +85,10 @@ func RunGrep(dir, str string, caseInsensitive bool) ([]*model.Ticket, error) {
 	return tickets, nil
 }
 
-func RunGreps(dir string, strs []string, caseInsensitive bool) ([]*model.Ticket, error) {
+func RunGreps(dir string, strs, exts []string, caseInsensitive bool) ([]*model.Ticket, error) {
 	tickets := []*model.Ticket{}
 	for _, str := range strs {
-		results, err := RunGrep(dir, str, caseInsensitive)
+		results, err := RunGrep(dir, str, exts, caseInsensitive)
 		if err != nil {
 			return nil, err
 		}
@@ -89,9 +101,10 @@ func RunGreps(dir string, strs []string, caseInsensitive bool) ([]*model.Ticket,
 func addCmdF(cmd *cobra.Command, _ []string) {
 	dir, _ := cmd.Flags().GetString("dir")
 	grepStrs, _ := cmd.Flags().GetStringSlice("grep")
+	extStrs, _ := cmd.Flags().GetStringSlice("ext")
 	caseInsensitive, _ := cmd.Flags().GetBool("case-insensitive")
 
-	tickets, err := RunGreps(dir, grepStrs, caseInsensitive)
+	tickets, err := RunGreps(dir, grepStrs, extStrs, caseInsensitive)
 	if err != nil {
 		ErrorAndExit(cmd, err)
 	}
