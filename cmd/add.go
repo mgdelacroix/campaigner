@@ -8,6 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"git.ctrlz.es/mgdelacroix/campaigner/campaign"
 	"git.ctrlz.es/mgdelacroix/campaigner/model"
 )
 
@@ -95,7 +96,15 @@ func addCmdF(cmd *cobra.Command, _ []string) {
 		ErrorAndExit(cmd, err)
 	}
 
-	for _, ticket := range tickets {
-		fmt.Printf("%+v\n", ticket)
+	cmp, err := campaign.Read()
+	if err != nil {
+		ErrorAndExit(cmd, err)
+	}
+
+	// ToDo: make this skip duplicates
+	cmp.Tickets = append(cmp.Tickets, tickets...)
+
+	if err := campaign.Save(cmp); err != nil {
+		ErrorAndExit(cmd, err)
 	}
 }
