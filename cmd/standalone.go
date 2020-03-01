@@ -32,13 +32,17 @@ func CreateJiraTicketStandaloneCmd() *cobra.Command {
 		RunE:  createJiraTicketStandaloneCmdF,
 	}
 
-	cmd.Flags().StringP("username", "u", "", "the jira username")
+	cmd.Flags().String("epic", "", "the jira epic id to associate the ticket with")
+	_ = cmd.MarkFlagRequired("epic")
+	cmd.Flags().String("team", "", "the team for the new ticket")
+	_ = cmd.MarkFlagRequired("epic")
+	cmd.Flags().String("username", "", "the jira username")
 	_ = cmd.MarkFlagRequired("username")
-	cmd.Flags().StringP("token", "t", "", "the jira token")
+	cmd.Flags().String("token", "", "the jira token")
 	_ = cmd.MarkFlagRequired("token")
-	cmd.Flags().StringP("summary", "s", "", "the summary of the ticket")
+	cmd.Flags().String("summary", "", "the summary of the ticket")
 	_ = cmd.MarkFlagRequired("summary")
-	cmd.Flags().StringP("template", "m", "", "the template to render the description of the ticket")
+	cmd.Flags().String("template", "", "the template to render the description of the ticket")
 	_ = cmd.MarkFlagRequired("template")
 	cmd.Flags().StringSliceP("vars", "v", []string{}, "the variables to use in the template")
 
@@ -58,12 +62,14 @@ func getVarMap(vars []string) (map[string]string, error) {
 }
 
 func createJiraTicketStandaloneCmdF(cmd *cobra.Command, _ []string) error {
+	epicId, _ := cmd.Flags().GetString("epic")
+	team, _ := cmd.Flags().GetString("team")
 	username, _ := cmd.Flags().GetString("username")
 	token, _ := cmd.Flags().GetString("token")
 	summaryTmplStr, _ := cmd.Flags().GetString("summary")
 	templatePath, _ := cmd.Flags().GetString("template")
 	vars, _ := cmd.Flags().GetStringSlice("vars")
-	
+
 	varMap, err := getVarMap(vars)
 	if err != nil {
 		return fmt.Errorf("error processing vars: %w")
@@ -79,25 +85,25 @@ func createJiraTicketStandaloneCmdF(cmd *cobra.Command, _ []string) error {
 		ErrorAndExit(cmd, err)
 	}
 	summary := summaryBytes.String()
-	
+
 	descTmpl, err := template.ParseFiles(templatePath)
 	if err != nil {
 		ErrorAndExit(cmd, err)
 	}
-	
-	var descriptionBytes bytes.Buffer	
+
+	var descriptionBytes bytes.Buffer
 	if err := descTmpl.Execute(&descriptionBytes, varMap); err != nil {
 		ErrorAndExit(cmd, err)
 	}
 	description := descriptionBytes.String()
-	
+
 	jiraClient := jira.NewClient(username, token)
-	
-	ticketKey, err := jiraClient.CreateTicket(summary, description)
+
+	ticketKey, err := jiraClient.CreateTicket(epicId, team, summary, description)
 	if err != nil {
 		ErrorAndExit(cmd, err)
 	}
-	
+
 	cmd.Printf("Ticket %s successfully created in JIRA", ticketKey)
 	return nil
 }
