@@ -22,7 +22,7 @@ func CreateJiraTicketStandaloneCmd() *cobra.Command {
 		Use:   "create-jira-ticket",
 		Short: "Creates a jira ticket from a template",
 		Args:  cobra.NoArgs,
-		Run:   createJiraTicketStandaloneCmdF,
+		RunE:  createJiraTicketStandaloneCmdF,
 	}
 
 	cmd.Flags().StringP("username", "u", "", "the jira username")
@@ -38,6 +38,42 @@ func CreateJiraTicketStandaloneCmd() *cobra.Command {
 	return cmd
 }
 
-func createJiraTicketStandaloneCmdF(cmd *cobra.Command, _ []string) {
+func getVarMap(vars []string) (map[string]string, error) {
+	varMap := map[string]string{}
+	for _, var := range vars {
+		parts := strings.Split(var, "=")
+		if len(parts) < 2 {
+			return nil, fmt.Errorf("cannot parse var %s", var)
+		}
+		varMap[parts[0]] = strings.Join(parts[1:], "")
+	}
+	return varMap, nil
+}
 
+func createJiraTicketStandaloneCmdF(cmd *cobra.Command, _ []string) error {
+	username, _ = cmd.Flags().GetString("username")
+	token, _ = cmd.Flags().GetString("token")
+	summary, _ = cmd.Flags().GetString("summary")
+	template, _ = cmd.Flags().GetString("template")
+	vars, _ = cmd.Flags().GetStringSlice("vars")
+	
+	varMap, err = getVarMap(vars)
+	if err != nil {
+		return fmt.Errorf("error processing vars: %w")
+	}
+	
+	// process template
+	description := TBD()
+	
+	jiraClient, err := jira.NewClient(username, token)
+	if err != nil {
+		ErrorAndExit(cmd, err)
+	}
+	
+	ticketKey, err := jiraClient.CreateTicket(summary, description)
+	if err != nil {
+		ErrorAndExit(cmd, err)
+	}
+	
+	cmd.Printf("Ticket %s successfully created in JIRA")
 }
