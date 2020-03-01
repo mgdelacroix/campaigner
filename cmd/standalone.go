@@ -1,6 +1,11 @@
 package cmd
 
 import (
+	"fmt"
+	"strings"
+
+	"git.ctrlz.es/mgdelacroix/campaigner/jira"
+
 	"github.com/spf13/cobra"
 )
 
@@ -51,13 +56,13 @@ func getVarMap(vars []string) (map[string]string, error) {
 }
 
 func createJiraTicketStandaloneCmdF(cmd *cobra.Command, _ []string) error {
-	username, _ = cmd.Flags().GetString("username")
-	token, _ = cmd.Flags().GetString("token")
-	summary, _ = cmd.Flags().GetString("summary")
-	template, _ = cmd.Flags().GetString("template")
-	vars, _ = cmd.Flags().GetStringSlice("vars")
+	username, _ := cmd.Flags().GetString("username")
+	token, _ := cmd.Flags().GetString("token")
+	summary, _ := cmd.Flags().GetString("summary")
+	template, _ := cmd.Flags().GetString("template")
+	vars, _ := cmd.Flags().GetStringSlice("vars")
 	
-	varMap, err = getVarMap(vars)
+	varMap, err := getVarMap(vars)
 	if err != nil {
 		return fmt.Errorf("error processing vars: %w")
 	}
@@ -76,4 +81,5 @@ func createJiraTicketStandaloneCmdF(cmd *cobra.Command, _ []string) error {
 	}
 	
 	cmd.Printf("Ticket %s successfully created in JIRA")
+	return nil
 }
