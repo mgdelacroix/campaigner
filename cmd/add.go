@@ -31,6 +31,7 @@ func AddCmd() *cobra.Command {
 	cmd.Flags().BoolP("ag", "a", false, "generates the tickets reading ag's output from stdin")
 	cmd.Flags().BoolP("grep", "g", false, "generates the tickets reading grep's output from stdin")
 	cmd.Flags().BoolP("govet", "v", false, "generates the tickets reading govet's output from stdin")
+	cmd.Flags().BoolP("file-only", "f", false, "generates one ticket per file instead of per match")
 
 	return cmd
 }
@@ -73,6 +74,7 @@ func addCmdF(cmd *cobra.Command, _ []string) error {
 	grep, _ := cmd.Flags().GetBool("grep")
 	ag, _ := cmd.Flags().GetBool("ag")
 	govet, _ := cmd.Flags().GetBool("govet")
+	fileOnly, _ := cmd.Flags().GetBool("file-only")
 
 	if !grep && !ag && !govet {
 		return fmt.Errorf("one of --grep --ag --govet flags should be active")
@@ -92,7 +94,7 @@ func addCmdF(cmd *cobra.Command, _ []string) error {
 	}
 
 	cmp.Tickets = append(cmp.Tickets, tickets...)
-	cmp.Tickets = model.RemoveDuplicateTickets(cmp.Tickets)
+	cmp.Tickets = model.RemoveDuplicateTickets(cmp.Tickets, fileOnly)
 
 	if err := campaign.Save(cmp); err != nil {
 		ErrorAndExit(cmd, err)

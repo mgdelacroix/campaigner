@@ -10,10 +10,16 @@ type Ticket struct {
 	Text     string `json:"text"`
 }
 
-func RemoveDuplicateTickets(tickets []*Ticket) []*Ticket {
+func RemoveDuplicateTickets(tickets []*Ticket, fileOnly bool) []*Ticket {
 	ticketMap := map[string]*Ticket{}
 	for _, t := range tickets {
-		ticketMap[fmt.Sprintf("%s:%d", t.Filename, t.LineNo)] = t
+		if fileOnly {
+			t.Text = ""
+			t.LineNo = 0
+			ticketMap[t.Filename] = t
+		} else {
+			ticketMap[fmt.Sprintf("%s:%d", t.Filename, t.LineNo)] = t
+		}
 	}
 
 	cleanTickets := []*Ticket{}
