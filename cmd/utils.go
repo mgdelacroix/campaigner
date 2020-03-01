@@ -7,6 +7,6 @@ import (
 )
 
 func ErrorAndExit(cmd *cobra.Command, err error) {
-	cmd.PrintErrln(err)
+	cmd.PrintErrln("ERROR: " + err.Error())
 	os.Exit(1)
 }

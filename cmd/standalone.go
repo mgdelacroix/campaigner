@@ -19,6 +19,7 @@ func StandaloneCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		CreateJiraTicketStandaloneCmd(),
+		GetJiraTicketStandaloneCmd(),
 	)
 
 	return cmd
@@ -45,6 +46,22 @@ func CreateJiraTicketStandaloneCmd() *cobra.Command {
 	cmd.Flags().String("template", "", "the template to render the description of the ticket")
 	_ = cmd.MarkFlagRequired("template")
 	cmd.Flags().StringSliceP("vars", "v", []string{}, "the variables to use in the template")
+
+	return cmd
+}
+
+func GetJiraTicketStandaloneCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "get-jira-ticket",
+		Short: "Gets the ticket from jira",
+		Args:  cobra.ExactArgs(1),
+		Run:   getJiraTicketStandaloneCmdF,
+	}
+
+	cmd.Flags().String("username", "", "the jira username")
+	_ = cmd.MarkFlagRequired("username")
+	cmd.Flags().String("token", "", "the jira token")
+	_ = cmd.MarkFlagRequired("token")
 
 	return cmd
 }
@@ -99,11 +116,25 @@ func createJiraTicketStandaloneCmdF(cmd *cobra.Command, _ []string) error {
 
 	jiraClient := jira.NewClient(username, token)
 
-	ticketKey, err := jiraClient.CreateTicket(epicId, team, summary, description)
+	ticketKey, err := jiraClient.CreateIssue(epicId, team, summary, description)
 	if err != nil {
 		ErrorAndExit(cmd, err)
 	}
 
 	cmd.Printf("Ticket %s successfully created in JIRA", ticketKey)
 	return nil
+}
+
+func getJiraTicketStandaloneCmdF(cmd *cobra.Command, args []string) {
+	username, _ := cmd.Flags().GetString("username")
+	token, _ := cmd.Flags().GetString("token")
+
+	jiraClient := jira.NewClient(username, token)
+
+	issue, err := jiraClient.GetIssue(args[0])
+	if err != nil {
+		ErrorAndExit(cmd, err)
+	}
+
+	fmt.Printf("Key: %s\nStatus: %s\n", issue.Key, issue.Fields.Status.Name)
 }
