@@ -12,10 +12,11 @@ Usage:
   campaigner [command]
 
 Available Commands:
-  add         Adds tickets to the campaign
+  add         Adds tickets to the campaign from the output of grep/ag/govet
   filter      Interactively filters the current ticket list
   help        Help about any command
   init        Creates a new campaign in the current directory
+  standalone  Standalone fire-and-forget commands
   token       Subcommands related to tokens
 
 Flags:
