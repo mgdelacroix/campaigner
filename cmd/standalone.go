@@ -40,10 +40,10 @@ func CreateJiraTicketStandaloneCmd() *cobra.Command {
 
 func getVarMap(vars []string) (map[string]string, error) {
 	varMap := map[string]string{}
-	for _, var := range vars {
-		parts := strings.Split(var, "=")
+	for _, v := range vars {
+		parts := strings.Split(v, "=")
 		if len(parts) < 2 {
-			return nil, fmt.Errorf("cannot parse var %s", var)
+			return nil, fmt.Errorf("cannot parse var %s", v)
 		}
 		varMap[parts[0]] = strings.Join(parts[1:], "")
 	}
