@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
+	"text/template"
 
 	"git.ctrlz.es/mgdelacroix/campaigner/jira"
 
@@ -50,7 +52,7 @@ func getVarMap(vars []string) (map[string]string, error) {
 		if len(parts) < 2 {
 			return nil, fmt.Errorf("cannot parse var %s", v)
 		}
-		varMap[parts[0]] = strings.Join(parts[1:], "")
+		varMap[parts[0]] = strings.Join(parts[1:], "=")
 	}
 	return varMap, nil
 }
@@ -58,32 +60,44 @@ func getVarMap(vars []string) (map[string]string, error) {
 func createJiraTicketStandaloneCmdF(cmd *cobra.Command, _ []string) error {
 	username, _ := cmd.Flags().GetString("username")
 	token, _ := cmd.Flags().GetString("token")
-	summary, _ := cmd.Flags().GetString("summary")
-	template, _ := cmd.Flags().GetString("template")
+	summaryTmplStr, _ := cmd.Flags().GetString("summary")
+	templatePath, _ := cmd.Flags().GetString("template")
 	vars, _ := cmd.Flags().GetStringSlice("vars")
 	
 	varMap, err := getVarMap(vars)
 	if err != nil {
 		return fmt.Errorf("error processing vars: %w")
 	}
-	
-	// process template
-	tmpl, err := template.ParseFiles(template)
+
+	sumTmpl, err := template.New("").Parse(summaryTmplStr)
 	if err != nil {
 		ErrorAndExit(cmd, err)
 	}
-	tmpl.Execute() // ToDo: write in a description var
+
+	var summaryBytes bytes.Buffer
+	if err := sumTmpl.Execute(&summaryBytes, varMap); err != nil {
+		ErrorAndExit(cmd, err)
+	}
+	summary := summaryBytes.String()
 	
-	jiraClient, err := jira.NewClient(username, token)
+	descTmpl, err := template.ParseFiles(templatePath)
 	if err != nil {
 		ErrorAndExit(cmd, err)
 	}
+	
+	var descriptionBytes bytes.Buffer	
+	if err := descTmpl.Execute(&descriptionBytes, varMap); err != nil {
+		ErrorAndExit(cmd, err)
+	}
+	description := descriptionBytes.String()
+	
+	jiraClient := jira.NewClient(username, token)
 	
 	ticketKey, err := jiraClient.CreateTicket(summary, description)
 	if err != nil {
 		ErrorAndExit(cmd, err)
 	}
 	
-	cmd.Printf("Ticket %s successfully created in JIRA")
+	cmd.Printf("Ticket %s successfully created in JIRA", ticketKey)
 	return nil
 }
