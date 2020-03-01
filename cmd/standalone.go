@@ -89,7 +89,7 @@ func createJiraTicketStandaloneCmdF(cmd *cobra.Command, _ []string) error {
 
 	varMap, err := getVarMap(vars)
 	if err != nil {
-		return fmt.Errorf("error processing vars: %w")
+		return fmt.Errorf("error processing vars: %w", err)
 	}
 
 	sumTmpl, err := template.New("").Parse(summaryTmplStr)

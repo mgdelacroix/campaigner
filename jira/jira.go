@@ -22,7 +22,7 @@ type JiraIssueFields struct {
 }
 
 type JiraIssue struct {
-	Key string `json:"key"`
+	Key    string          `json:"key"`
 	Fields JiraIssueFields `json:"fields"`
 }
 
