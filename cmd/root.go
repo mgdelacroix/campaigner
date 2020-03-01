@@ -17,6 +17,7 @@ func RootCmd() *cobra.Command {
 		AddCmd(),
 		FilterCmd(),
 		InitCmd(),
+		StandaloneCmd(),
 		TokenCmd(),
 	)
 
