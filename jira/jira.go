@@ -18,7 +18,8 @@ type JiraIssueFieldsStatus struct {
 }
 
 type JiraIssueFields struct {
-	Status JiraIssueFieldsStatus `json:"status"`
+	Status  JiraIssueFieldsStatus `json:"status"`
+	Summary string                `json:"summary"`
 }
 
 type JiraIssue struct {

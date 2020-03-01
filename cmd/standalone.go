@@ -136,5 +136,5 @@ func getJiraTicketStandaloneCmdF(cmd *cobra.Command, args []string) {
 		ErrorAndExit(cmd, err)
 	}
 
-	fmt.Printf("Key: %s\nStatus: %s\n", issue.Key, issue.Fields.Status.Name)
+	fmt.Printf("Summary: %s\nKey: %s\nStatus: %s\n", issue.Fields.Summary, issue.Key, issue.Fields.Status.Name)
 }
