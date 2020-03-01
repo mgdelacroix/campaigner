@@ -68,7 +68,11 @@ func createJiraTicketStandaloneCmdF(cmd *cobra.Command, _ []string) error {
 	}
 	
 	// process template
-	description := TBD()
+	tmpl, err := template.ParseFiles(template)
+	if err != nil {
+		ErrorAndExit(cmd, err)
+	}
+	tmpl.Execute() // ToDo: write in a description var
 	
 	jiraClient, err := jira.NewClient(username, token)
 	if err != nil {
