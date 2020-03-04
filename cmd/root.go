@@ -20,6 +20,7 @@ func RootCmd() *cobra.Command {
 		StandaloneCmd(),
 		TokenCmd(),
 		PublishCmd(),
+		SyncCmd(),
 	)
 
 	return cmd
