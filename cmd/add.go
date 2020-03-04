@@ -13,25 +13,77 @@ import (
 	"git.ctrlz.es/mgdelacroix/campaigner/model"
 )
 
+func GrepAddCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use: "grep",
+		Short: "generates the tickets reading grep's output from stdin",
+		Long: "Generates tickets for the campaign reading from the standard input the output grep. The grep command must be run with the -n flag",
+		Example: `  grep -nriIF --include \*.go cobra.Command | campaigner add grep`,
+		Args: cobra.NoArgs,
+		Run: grepAddCmdF,
+	}
+
+	cmd.Flags().BoolP("file-only", "f", false, "generates one ticket per file instead of per match")
+
+	return cmd
+}
+
+func AgAddCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use: "ag",
+		Short: "generates the tickets reading ag's output from stdin",
+		Long: "Generates tickets for the campaign reading from the standard input the output ag",
+		Example: `  ag cobra.Command | campaigner add ag`,
+		Args: cobra.NoArgs,
+		RunE: agAddCmdF,
+	}
+
+	cmd.Flags().BoolP("file-only", "f", false, "generates one ticket per file instead of per match")
+
+	return cmd
+}
+
+func GovetAddCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use: "govet",
+		Short: "generates the tickets reading govet's output from stdin",
+		Long: "Generates tickets for the campaign reading from the standard input the output grep. The grep command must be run with the -json flag",
+		Example: `  govet -json ./... | campaigner add govet`,
+		Args: cobra.NoArgs,
+		RunE: govetAddCmdF,
+	}
+
+	cmd.Flags().BoolP("file-only", "f", false, "generates one ticket per file instead of per match")
+
+	return cmd
+}
+
+func CsvAddCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use: "csv",
+		Short: "generates the tickets reading a csv file",
+		Example: `  campaigner add csv --file tickets.csv`,
+		Args: cobra.NoArgs,
+		RunE: csvAddCmdF,
+	}
+
+	cmd.Flags().BoolP("file-only", "f", false, "generates one ticket per file instead of per match")
+
+	return cmd
+}
+
 func AddCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add",
 		Short: "Adds tickets to the campaign from the output of grep/ag/govet",
-		Long: `Generates tickets for the campaign reading from the standard input the output of one of the following three commands:
-  - grep (should be run with the -n flag)
-  - ag
-  - govet (should be run with the -json flag)`,
-		Example: `  grep -nriIF --include \*.go cobra.Command | campaigner add --grep
-  ag cobra.Command | campaigner add --ag
-  govet -json ./... | campaigner add --govet`,
-		Args: cobra.NoArgs,
-		RunE: addCmdF,
 	}
 
-	cmd.Flags().BoolP("ag", "a", false, "generates the tickets reading ag's output from stdin")
-	cmd.Flags().BoolP("grep", "g", false, "generates the tickets reading grep's output from stdin")
-	cmd.Flags().BoolP("govet", "v", false, "generates the tickets reading govet's output from stdin")
-	cmd.Flags().BoolP("file-only", "f", false, "generates one ticket per file instead of per match")
+	cmd.AddCommand(
+		GrepAddCmd(),
+		AgAddCmd(),
+		GovetAddCmd(),
+		CsvAddCmd(),
+	)
 
 	return cmd
 }
@@ -70,23 +122,10 @@ func parseGrep() []*model.Ticket {
 	return tickets
 }
 
-func addCmdF(cmd *cobra.Command, _ []string) error {
-	grep, _ := cmd.Flags().GetBool("grep")
-	ag, _ := cmd.Flags().GetBool("ag")
-	govet, _ := cmd.Flags().GetBool("govet")
+func grepAddCmdF(cmd *cobra.Command, _ []string) {
 	fileOnly, _ := cmd.Flags().GetBool("file-only")
 
-	if !grep && !ag && !govet {
-		return fmt.Errorf("one of --grep --ag --govet flags should be active")
-	}
-
-	var tickets []*model.Ticket
-	switch {
-	case grep:
-		tickets = parseGrep()
-	default:
-		return fmt.Errorf("not implemented yet")
-	}
+	tickets := parseGrep()
 
 	cmp, err := campaign.Read()
 	if err != nil {
@@ -99,5 +138,16 @@ func addCmdF(cmd *cobra.Command, _ []string) error {
 	if err := campaign.Save(cmp); err != nil {
 		ErrorAndExit(cmd, err)
 	}
-	return nil
+}
+
+func agAddCmdF(_ *cobra.Command, _ []string) error {
+	return fmt.Errorf("not implemented yet")
+}
+
+func govetAddCmdF(_ *cobra.Command, _ []string) error {
+	return fmt.Errorf("not implemented yet")
+}
+
+func csvAddCmdF(cmd *cobra.Command, _ []string) error {
+	return fmt.Errorf("not implemented yet")
 }
