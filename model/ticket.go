@@ -4,13 +4,17 @@ import (
 	"fmt"
 )
 
-type Ticket map[string]interface{}
+type Ticket struct {
+	GithubLink string                 `json:"githubLink,omitempty"`
+	JiraLink   string                 `json:"jiraLink,omitempty"`
+	Data       map[string]interface{} `json:"data,omitempty"`
+}
 
 func RemoveDuplicateTickets(tickets []*Ticket, fileOnly bool) []*Ticket {
 	ticketMap := map[string]*Ticket{}
 	for _, t := range tickets {
-		filename, _ := (*t)["filename"].(string)
-		lineNo, _ := (*t)["lineNo"].(int)
+		filename, _ := t.Data["filename"].(string)
+		lineNo, _ := t.Data["lineNo"].(int)
 		if fileOnly {
 			ticketMap[filename] = t
 		} else {
