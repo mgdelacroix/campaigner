@@ -4,21 +4,17 @@ import (
 	"fmt"
 )
 
-type Ticket struct {
-	Filename string `json:"filename"`
-	LineNo   int    `json:"line_no"`
-	Text     string `json:"text"`
-}
+type Ticket map[string]interface{}
 
 func RemoveDuplicateTickets(tickets []*Ticket, fileOnly bool) []*Ticket {
 	ticketMap := map[string]*Ticket{}
 	for _, t := range tickets {
+		filename, _ := (*t)["filename"].(string)
+		lineNo, _ := (*t)["lineNo"].(int)
 		if fileOnly {
-			t.Text = ""
-			t.LineNo = 0
-			ticketMap[t.Filename] = t
+			ticketMap[filename] = t
 		} else {
-			ticketMap[fmt.Sprintf("%s:%d", t.Filename, t.LineNo)] = t
+			ticketMap[fmt.Sprintf("%s:%d", filename, lineNo)] = t
 		}
 	}
 

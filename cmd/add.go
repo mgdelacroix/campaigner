@@ -104,9 +104,9 @@ func parseGrepLine(line string) (*model.Ticket, error) {
 	text := strings.Join(parts[2:], "")
 
 	return &model.Ticket{
-		Filename: filename,
-		LineNo:   lineNo,
-		Text:     text,
+		"filename": filename,
+		"lineNo":   lineNo,
+		"text":     text,
 	}, nil
 }
 
