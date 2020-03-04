@@ -16,7 +16,7 @@ import (
 func GrepAddCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "grep",
-		Short:   "generates the tickets reading grep's output from stdin",
+		Short:   "Generates the tickets reading grep's output from stdin",
 		Long:    "Generates tickets for the campaign reading from the standard input the output grep. The grep command must be run with the -n flag",
 		Example: `  grep -nriIF --include \*.go cobra.Command | campaigner add grep`,
 		Args:    cobra.NoArgs,
@@ -31,7 +31,7 @@ func GrepAddCmd() *cobra.Command {
 func AgAddCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "ag",
-		Short:   "generates the tickets reading ag's output from stdin",
+		Short:   "Generates the tickets reading ag's output from stdin",
 		Long:    "Generates tickets for the campaign reading from the standard input the output ag",
 		Example: `  ag cobra.Command | campaigner add ag`,
 		Args:    cobra.NoArgs,
@@ -46,7 +46,7 @@ func AgAddCmd() *cobra.Command {
 func GovetAddCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "govet",
-		Short:   "generates the tickets reading govet's output from stdin",
+		Short:   "Generates the tickets reading govet's output from stdin",
 		Long:    "Generates tickets for the campaign reading from the standard input the output grep. The grep command must be run with the -json flag",
 		Example: `  govet -json ./... | campaigner add govet`,
 		Args:    cobra.NoArgs,
@@ -61,7 +61,7 @@ func GovetAddCmd() *cobra.Command {
 func CsvAddCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "csv",
-		Short:   "generates the tickets reading a csv file",
+		Short:   "Generates the tickets reading a csv file",
 		Example: `  campaigner add csv --file tickets.csv`,
 		Args:    cobra.NoArgs,
 		RunE:    csvAddCmdF,

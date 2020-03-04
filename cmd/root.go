@@ -19,6 +19,7 @@ func RootCmd() *cobra.Command {
 		InitCmd(),
 		StandaloneCmd(),
 		TokenCmd(),
+		PublishCmd(),
 	)
 
 	return cmd
