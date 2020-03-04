@@ -56,3 +56,4 @@ Use "campaigner [command] --help" for more information about a command.
 - [ ] Add the `sync` command to synchronize the issue state.
 - [ ] Add the `filter` command with a button to get context and the
       option to add fn name.
+- [ ] Add a way to `add --csv --file tickets.csv`
