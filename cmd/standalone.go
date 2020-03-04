@@ -114,7 +114,10 @@ func createJiraTicketStandaloneCmdF(cmd *cobra.Command, _ []string) error {
 	}
 	description := descriptionBytes.String()
 
-	jiraClient := jira.NewClient(username, token)
+	jiraClient, err := jira.NewClient(username, token)
+	if err != nil {
+		ErrorAndExit(cmd, err)
+	}
 
 	ticketKey, err := jiraClient.CreateIssue(epicId, team, summary, description)
 	if err != nil {
@@ -129,12 +132,15 @@ func getJiraTicketStandaloneCmdF(cmd *cobra.Command, args []string) {
 	username, _ := cmd.Flags().GetString("username")
 	token, _ := cmd.Flags().GetString("token")
 
-	jiraClient := jira.NewClient(username, token)
+	jiraClient, err := jira.NewClient(username, token)
+	if err != nil {
+		ErrorAndExit(cmd, err)
+	}
 
 	issue, err := jiraClient.GetIssue(args[0])
 	if err != nil {
 		ErrorAndExit(cmd, err)
 	}
 
-	fmt.Printf("Summary: %s\nKey: %s\nStatus: %s\n", issue.Fields.Summary, issue.Key, issue.Fields.Status.Name)
+	fmt.Printf("Summary: %s\nKey: %s\nStatus: %s\nAsignee: %s\n", issue.Fields.Summary, issue.Key, issue.Fields.Status.Name, issue.Fields.Assignee.DisplayName)
 }

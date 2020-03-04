@@ -15,12 +15,12 @@ import (
 
 func GrepAddCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "grep",
-		Short: "generates the tickets reading grep's output from stdin",
-		Long: "Generates tickets for the campaign reading from the standard input the output grep. The grep command must be run with the -n flag",
+		Use:     "grep",
+		Short:   "generates the tickets reading grep's output from stdin",
+		Long:    "Generates tickets for the campaign reading from the standard input the output grep. The grep command must be run with the -n flag",
 		Example: `  grep -nriIF --include \*.go cobra.Command | campaigner add grep`,
-		Args: cobra.NoArgs,
-		Run: grepAddCmdF,
+		Args:    cobra.NoArgs,
+		Run:     grepAddCmdF,
 	}
 
 	cmd.Flags().BoolP("file-only", "f", false, "generates one ticket per file instead of per match")
@@ -30,12 +30,12 @@ func GrepAddCmd() *cobra.Command {
 
 func AgAddCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "ag",
-		Short: "generates the tickets reading ag's output from stdin",
-		Long: "Generates tickets for the campaign reading from the standard input the output ag",
+		Use:     "ag",
+		Short:   "generates the tickets reading ag's output from stdin",
+		Long:    "Generates tickets for the campaign reading from the standard input the output ag",
 		Example: `  ag cobra.Command | campaigner add ag`,
-		Args: cobra.NoArgs,
-		RunE: agAddCmdF,
+		Args:    cobra.NoArgs,
+		RunE:    agAddCmdF,
 	}
 
 	cmd.Flags().BoolP("file-only", "f", false, "generates one ticket per file instead of per match")
@@ -45,12 +45,12 @@ func AgAddCmd() *cobra.Command {
 
 func GovetAddCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "govet",
-		Short: "generates the tickets reading govet's output from stdin",
-		Long: "Generates tickets for the campaign reading from the standard input the output grep. The grep command must be run with the -json flag",
+		Use:     "govet",
+		Short:   "generates the tickets reading govet's output from stdin",
+		Long:    "Generates tickets for the campaign reading from the standard input the output grep. The grep command must be run with the -json flag",
 		Example: `  govet -json ./... | campaigner add govet`,
-		Args: cobra.NoArgs,
-		RunE: govetAddCmdF,
+		Args:    cobra.NoArgs,
+		RunE:    govetAddCmdF,
 	}
 
 	cmd.Flags().BoolP("file-only", "f", false, "generates one ticket per file instead of per match")
@@ -60,11 +60,11 @@ func GovetAddCmd() *cobra.Command {
 
 func CsvAddCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "csv",
-		Short: "generates the tickets reading a csv file",
+		Use:     "csv",
+		Short:   "generates the tickets reading a csv file",
 		Example: `  campaigner add csv --file tickets.csv`,
-		Args: cobra.NoArgs,
-		RunE: csvAddCmdF,
+		Args:    cobra.NoArgs,
+		RunE:    csvAddCmdF,
 	}
 
 	cmd.Flags().BoolP("file-only", "f", false, "generates one ticket per file instead of per match")
