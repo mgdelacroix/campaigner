@@ -6,6 +6,7 @@ import (
 	"strings"
 	"text/template"
 
+	"git.ctrlz.es/mgdelacroix/campaigner/config"
 	"git.ctrlz.es/mgdelacroix/campaigner/jira"
 
 	"github.com/spf13/cobra"
@@ -38,9 +39,7 @@ func CreateJiraTicketStandaloneCmd() *cobra.Command {
 	cmd.Flags().String("team", "", "the team for the new ticket")
 	_ = cmd.MarkFlagRequired("epic")
 	cmd.Flags().String("username", "", "the jira username")
-	_ = cmd.MarkFlagRequired("username")
 	cmd.Flags().String("token", "", "the jira token")
-	_ = cmd.MarkFlagRequired("token")
 	cmd.Flags().String("summary", "", "the summary of the ticket")
 	_ = cmd.MarkFlagRequired("summary")
 	cmd.Flags().String("template", "", "the template to render the description of the ticket")
@@ -59,9 +58,7 @@ func GetJiraTicketStandaloneCmd() *cobra.Command {
 	}
 
 	cmd.Flags().String("username", "", "the jira username")
-	_ = cmd.MarkFlagRequired("username")
 	cmd.Flags().String("token", "", "the jira token")
-	_ = cmd.MarkFlagRequired("token")
 
 	return cmd
 }
@@ -86,6 +83,20 @@ func createJiraTicketStandaloneCmdF(cmd *cobra.Command, _ []string) error {
 	summaryTmplStr, _ := cmd.Flags().GetString("summary")
 	templatePath, _ := cmd.Flags().GetString("template")
 	vars, _ := cmd.Flags().GetStringSlice("vars")
+
+	if username == "" || token == "" {
+		cfg, err := config.ReadConfig()
+		if err != nil {
+			ErrorAndExit(cmd, err)
+		}
+
+		if username == "" {
+			username = cfg.JiraUsername
+		}
+		if token == "" {
+			token = cfg.JiraToken
+		}
+	}
 
 	varMap, err := getVarMap(vars)
 	if err != nil {
@@ -131,6 +142,20 @@ func createJiraTicketStandaloneCmdF(cmd *cobra.Command, _ []string) error {
 func getJiraTicketStandaloneCmdF(cmd *cobra.Command, args []string) {
 	username, _ := cmd.Flags().GetString("username")
 	token, _ := cmd.Flags().GetString("token")
+
+	if username == "" || token == "" {
+		cfg, err := config.ReadConfig()
+		if err != nil {
+			ErrorAndExit(cmd, err)
+		}
+
+		if username == "" {
+			username = cfg.JiraUsername
+		}
+		if token == "" {
+			token = cfg.JiraToken
+		}
+	}
 
 	jiraClient, err := jira.NewClient(username, token)
 	if err != nil {
