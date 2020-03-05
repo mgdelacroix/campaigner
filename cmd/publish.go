@@ -20,6 +20,7 @@ func JiraPublishCmd() *cobra.Command {
 
 	cmd.Flags().BoolP("all", "a", false, "Publish all the tickets of the campaign")
 	cmd.Flags().IntP("batch", "b", 0, "Number of tickets to publish")
+	cmd.Flags().Bool("dry-run", false, "Print the tickets information instead of publishing them")
 
 	return cmd
 }
@@ -40,6 +41,7 @@ func PublishCmd() *cobra.Command {
 func jiraPublishCmdF(cmd *cobra.Command, _ []string) error {
 	all, _ := cmd.Flags().GetBool("all")
 	batch, _ := cmd.Flags().GetInt("batch")
+	dryRun, _ := cmd.Flags().GetBool("dry-run")
 
 	if !all && batch == 0 {
 		return fmt.Errorf("One of --all or --batch flags is required")
@@ -61,13 +63,13 @@ func jiraPublishCmdF(cmd *cobra.Command, _ []string) error {
 	}
 
 	if all {
-		count, err := jiraClient.PublishAll(cmp)
+		count, err := jiraClient.PublishAll(cmp, dryRun)
 		if err != nil {
 			ErrorAndExit(cmd, err)
 		}
 		cmd.Printf("All %d tickets successfully published in jira\n", count)
 	} else {
-		if err := jiraClient.PublishBatch(cmp, batch); err != nil {
+		if err := jiraClient.PublishBatch(cmp, batch, dryRun); err != nil {
 			ErrorAndExit(cmd, err)
 		}
 		cmd.Printf("Batch of %d tickets successfully published in jira\n", batch)

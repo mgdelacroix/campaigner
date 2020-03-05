@@ -46,6 +46,7 @@ func CreateJiraTicketStandaloneCmd() *cobra.Command {
 	cmd.Flags().String("username", "", "The jira username")
 	cmd.Flags().String("token", "", "The jira token")
 	cmd.Flags().StringSliceP("vars", "v", []string{}, "The variables to use in the template")
+	cmd.Flags().Bool("dry-run", false, "Print the ticket information instead of creating it")
 
 	return cmd
 }
@@ -87,6 +88,7 @@ func createJiraTicketStandaloneCmdF(cmd *cobra.Command, _ []string) error {
 	summary, _ := cmd.Flags().GetString("summary")
 	template, _ := cmd.Flags().GetString("template")
 	vars, _ := cmd.Flags().GetStringSlice("vars")
+	dryRun, _ := cmd.Flags().GetBool("dry-run")
 
 	if username == "" || token == "" {
 		cfg, err := config.ReadConfig()
@@ -120,7 +122,7 @@ func createJiraTicketStandaloneCmdF(cmd *cobra.Command, _ []string) error {
 	}
 	ticket := &model.Ticket{Data: varMap}
 
-	issue, err := jiraClient.PublishTicket(ticket, campaign)
+	issue, err := jiraClient.PublishTicket(ticket, campaign, dryRun)
 	if err != nil {
 		ErrorAndExit(cmd, err)
 	}

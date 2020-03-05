@@ -2,6 +2,7 @@ package jira
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"text/template"
 
@@ -87,10 +88,16 @@ func (c *JiraClient) GetIssueFromTicket(ticket *model.Ticket, cmp *model.Campaig
 	return issue, nil
 }
 
-func (c *JiraClient) PublishTicket(ticket *model.Ticket, cmp *model.Campaign) (*jira.Issue, error) {
+func (c *JiraClient) PublishTicket(ticket *model.Ticket, cmp *model.Campaign, dryRun bool) (*jira.Issue, error) {
 	issue, err := c.GetIssueFromTicket(ticket, cmp)
 	if err != nil {
 		return nil, err
+	}
+
+	if dryRun {
+		b, _ := json.MarshalIndent(issue, "", "  ")
+		fmt.Println(string(b))
+		return issue, nil
 	}
 
 	newIssue, _, err := c.Issue.Create(issue)
@@ -109,15 +116,19 @@ func (c *JiraClient) GetIssue(issueNo string) (*jira.Issue, error) {
 	return issue, nil
 }
 
-func (c *JiraClient) PublishNextTicket(cmp *model.Campaign) (bool, error) {
+func (c *JiraClient) PublishNextTicket(cmp *model.Campaign, dryRun bool) (bool, error) {
 	ticket := cmp.NextUnpublishedTicket()
 	if ticket == nil {
 		return false, nil
 	}
 
-	issue, err := c.PublishTicket(ticket, cmp)
+	issue, err := c.PublishTicket(ticket, cmp, dryRun)
 	if err != nil {
 		return false, err
+	}
+
+	if dryRun {
+		return true, nil
 	}
 
 	ticket.JiraLink = issue.Key
@@ -127,10 +138,10 @@ func (c *JiraClient) PublishNextTicket(cmp *model.Campaign) (bool, error) {
 	return true, nil
 }
 
-func (c *JiraClient) PublishAll(cmp *model.Campaign) (int, error) {
+func (c *JiraClient) PublishAll(cmp *model.Campaign, dryRun bool) (int, error) {
 	count := 0
 	for {
-		next, err := c.PublishNextTicket(cmp)
+		next, err := c.PublishNextTicket(cmp, dryRun)
 		if err != nil {
 			return count, err
 		}
@@ -142,9 +153,9 @@ func (c *JiraClient) PublishAll(cmp *model.Campaign) (int, error) {
 	return count, nil
 }
 
-func (c *JiraClient) PublishBatch(cmp *model.Campaign, batch int) error {
+func (c *JiraClient) PublishBatch(cmp *model.Campaign, batch int, dryRun bool) error {
 	for i := 0; i <= batch; i++ {
-		next, err := c.PublishNextTicket(cmp)
+		next, err := c.PublishNextTicket(cmp, dryRun)
 		if err != nil {
 			return err
 		}
