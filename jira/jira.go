@@ -4,19 +4,17 @@ import (
 	jira "gopkg.in/andygrunwald/go-jira.v1"
 )
 
-const defaultUrl = "https://mattermost.atlassian.net"
-
 type JiraClient struct {
 	*jira.Client
 }
 
-func NewClient(username, token string) (*JiraClient, error) {
+func NewClient(url, username, token string) (*JiraClient, error) {
 	tp := jira.BasicAuthTransport{
 		Username: username,
 		Password: token,
 	}
 
-	client, err := jira.NewClient(tp.Client(), defaultUrl)
+	client, err := jira.NewClient(tp.Client(), url)
 	if err != nil {
 		return nil, err
 	}

@@ -34,6 +34,8 @@ func CreateJiraTicketStandaloneCmd() *cobra.Command {
 		RunE:  createJiraTicketStandaloneCmdF,
 	}
 
+	cmd.Flags().String("url", "", "the jira server URL")
+	_ = cmd.MarkFlagRequired("url")
 	cmd.Flags().String("epic", "", "the jira epic id to associate the ticket with")
 	_ = cmd.MarkFlagRequired("epic")
 	cmd.Flags().String("team", "", "the team for the new ticket")
@@ -57,6 +59,8 @@ func GetJiraTicketStandaloneCmd() *cobra.Command {
 		Run:   getJiraTicketStandaloneCmdF,
 	}
 
+	cmd.Flags().String("url", "", "the jira server URL")
+	_ = cmd.MarkFlagRequired("url")
 	cmd.Flags().String("username", "", "the jira username")
 	cmd.Flags().String("token", "", "the jira token")
 
@@ -76,6 +80,7 @@ func getVarMap(vars []string) (map[string]string, error) {
 }
 
 func createJiraTicketStandaloneCmdF(cmd *cobra.Command, _ []string) error {
+	url, _ := cmd.Flags().GetString("url")
 	epicId, _ := cmd.Flags().GetString("epic")
 	team, _ := cmd.Flags().GetString("team")
 	username, _ := cmd.Flags().GetString("username")
@@ -125,7 +130,7 @@ func createJiraTicketStandaloneCmdF(cmd *cobra.Command, _ []string) error {
 	}
 	description := descriptionBytes.String()
 
-	jiraClient, err := jira.NewClient(username, token)
+	jiraClient, err := jira.NewClient(url, username, token)
 	if err != nil {
 		ErrorAndExit(cmd, err)
 	}
@@ -140,6 +145,7 @@ func createJiraTicketStandaloneCmdF(cmd *cobra.Command, _ []string) error {
 }
 
 func getJiraTicketStandaloneCmdF(cmd *cobra.Command, args []string) {
+	url, _ := cmd.Flags().GetString("url")
 	username, _ := cmd.Flags().GetString("username")
 	token, _ := cmd.Flags().GetString("token")
 
@@ -157,7 +163,7 @@ func getJiraTicketStandaloneCmdF(cmd *cobra.Command, args []string) {
 		}
 	}
 
-	jiraClient, err := jira.NewClient(username, token)
+	jiraClient, err := jira.NewClient(url, username, token)
 	if err != nil {
 		ErrorAndExit(cmd, err)
 	}
