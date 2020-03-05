@@ -25,6 +25,7 @@ func InitCmd() *cobra.Command {
 	_ = cmd.MarkFlagRequired("summary")
 	cmd.Flags().StringP("template", "t", "", "The template path for the description of the tickets")
 	_ = cmd.MarkFlagRequired("template")
+	cmd.Flags().StringP("issue-type", "i", "Story", "The issue type to create the tickets as")
 
 	return cmd
 }
@@ -35,13 +36,15 @@ func initCmdF(cmd *cobra.Command, _ []string) {
 	epic, _ := cmd.Flags().GetString("epic")
 	summary, _ := cmd.Flags().GetString("summary")
 	template, _ := cmd.Flags().GetString("template")
+	issueType, _ := cmd.Flags().GetString("issue-type")
 
 	cmp := &model.Campaign{
-		Url:      url,
-		Project:  project,
-		Epic:     epic,
-		Summary:  summary,
-		Template: template,
+		Url:       url,
+		Project:   project,
+		Epic:      epic,
+		IssueType: issueType,
+		Summary:   summary,
+		Template:  template,
 	}
 	if err := campaign.Save(cmp); err != nil {
 		ErrorAndExit(cmd, err)

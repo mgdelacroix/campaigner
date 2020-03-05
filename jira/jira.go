@@ -41,7 +41,7 @@ func (c *JiraClient) GetIssueFromTicket(ticket *model.Ticket, campaign *model.Ca
 		"Description": description,
 		"Summary":     summary,
 		"Project":     campaign.Project,
-		"Issue Type":  "Story",
+		"Issue Type":  campaign.IssueType,
 		"Epic Link":   campaign.Epic,
 	}
 
@@ -59,7 +59,7 @@ func (c *JiraClient) GetIssueFromTicket(ticket *model.Ticket, campaign *model.Ca
 		return nil, fmt.Errorf("Error retrieving project with key %s", campaign.Project)
 	}
 
-	issueType := project.GetIssueTypeWithName("Story")
+	issueType := project.GetIssueTypeWithName(campaign.IssueType)
 	if issueType == nil {
 		return nil, fmt.Errorf("Error retrieving issue type with name Story")
 	}
