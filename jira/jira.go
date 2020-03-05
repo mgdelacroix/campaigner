@@ -143,5 +143,14 @@ func (c *JiraClient) PublishAll(cmp *model.Campaign) (int, error) {
 }
 
 func (c *JiraClient) PublishBatch(cmp *model.Campaign, batch int) error {
+	for i := 0; i <= batch; i++ {
+		next, err := c.PublishNextTicket(cmp)
+		if err != nil {
+			return err
+		}
+		if !next {
+			return nil
+		}
+	}
 	return nil
 }
