@@ -2,7 +2,6 @@ package jira
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"text/template"
 
@@ -92,9 +91,6 @@ func (c *JiraClient) CreateTicket(ticket *model.Ticket, campaign *model.Campaign
 	if err != nil {
 		return nil, err
 	}
-
-	b, _ := json.MarshalIndent(issue, "", "  ")
-	fmt.Println(string(b))
 
 	newIssue, _, err := c.Issue.Create(issue)
 	if err != nil {
