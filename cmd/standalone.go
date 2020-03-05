@@ -1,13 +1,12 @@
 package cmd
 
 import (
-	"bytes"
 	"fmt"
 	"strings"
-	"text/template"
 
 	"git.ctrlz.es/mgdelacroix/campaigner/config"
 	"git.ctrlz.es/mgdelacroix/campaigner/jira"
+	"git.ctrlz.es/mgdelacroix/campaigner/model"
 
 	"github.com/spf13/cobra"
 )
@@ -34,19 +33,19 @@ func CreateJiraTicketStandaloneCmd() *cobra.Command {
 		RunE:  createJiraTicketStandaloneCmdF,
 	}
 
-	cmd.Flags().String("url", "", "the jira server URL")
+	cmd.Flags().String("url", "", "The jira server URL")
 	_ = cmd.MarkFlagRequired("url")
-	cmd.Flags().String("epic", "", "the jira epic id to associate the ticket with")
+	cmd.Flags().String("epic", "", "The jira epic id to associate the ticket with")
 	_ = cmd.MarkFlagRequired("epic")
-	cmd.Flags().String("team", "", "the team for the new ticket")
-	_ = cmd.MarkFlagRequired("epic")
-	cmd.Flags().String("username", "", "the jira username")
-	cmd.Flags().String("token", "", "the jira token")
-	cmd.Flags().String("summary", "", "the summary of the ticket")
+	cmd.Flags().StringP("project", "p", "", "The jira project key to associate the tickets with")
+	_ = cmd.MarkFlagRequired("project")
+	cmd.Flags().String("summary", "", "The summary of the ticket")
 	_ = cmd.MarkFlagRequired("summary")
-	cmd.Flags().String("template", "", "the template to render the description of the ticket")
+	cmd.Flags().String("template", "", "The template to render the description of the ticket")
 	_ = cmd.MarkFlagRequired("template")
-	cmd.Flags().StringSliceP("vars", "v", []string{}, "the variables to use in the template")
+	cmd.Flags().String("username", "", "The jira username")
+	cmd.Flags().String("token", "", "The jira token")
+	cmd.Flags().StringSliceP("vars", "v", []string{}, "The variables to use in the template")
 
 	return cmd
 }
@@ -59,16 +58,16 @@ func GetJiraTicketStandaloneCmd() *cobra.Command {
 		Run:   getJiraTicketStandaloneCmdF,
 	}
 
-	cmd.Flags().String("url", "", "the jira server URL")
+	cmd.Flags().String("url", "", "The jira server URL")
 	_ = cmd.MarkFlagRequired("url")
-	cmd.Flags().String("username", "", "the jira username")
-	cmd.Flags().String("token", "", "the jira token")
+	cmd.Flags().String("username", "", "The jira username")
+	cmd.Flags().String("token", "", "The jira token")
 
 	return cmd
 }
 
-func getVarMap(vars []string) (map[string]string, error) {
-	varMap := map[string]string{}
+func getVarMap(vars []string) (map[string]interface{}, error) {
+	varMap := map[string]interface{}{}
 	for _, v := range vars {
 		parts := strings.Split(v, "=")
 		if len(parts) < 2 {
@@ -81,12 +80,12 @@ func getVarMap(vars []string) (map[string]string, error) {
 
 func createJiraTicketStandaloneCmdF(cmd *cobra.Command, _ []string) error {
 	url, _ := cmd.Flags().GetString("url")
-	epicId, _ := cmd.Flags().GetString("epic")
-	team, _ := cmd.Flags().GetString("team")
+	epic, _ := cmd.Flags().GetString("epic")
+	project, _ := cmd.Flags().GetString("project")
 	username, _ := cmd.Flags().GetString("username")
 	token, _ := cmd.Flags().GetString("token")
-	summaryTmplStr, _ := cmd.Flags().GetString("summary")
-	templatePath, _ := cmd.Flags().GetString("template")
+	summary, _ := cmd.Flags().GetString("summary")
+	template, _ := cmd.Flags().GetString("template")
 	vars, _ := cmd.Flags().GetStringSlice("vars")
 
 	if username == "" || token == "" {
@@ -108,39 +107,25 @@ func createJiraTicketStandaloneCmdF(cmd *cobra.Command, _ []string) error {
 		return fmt.Errorf("error processing vars: %w", err)
 	}
 
-	sumTmpl, err := template.New("").Parse(summaryTmplStr)
-	if err != nil {
-		ErrorAndExit(cmd, err)
-	}
-
-	var summaryBytes bytes.Buffer
-	if err := sumTmpl.Execute(&summaryBytes, varMap); err != nil {
-		ErrorAndExit(cmd, err)
-	}
-	summary := summaryBytes.String()
-
-	descTmpl, err := template.ParseFiles(templatePath)
-	if err != nil {
-		ErrorAndExit(cmd, err)
-	}
-
-	var descriptionBytes bytes.Buffer
-	if err := descTmpl.Execute(&descriptionBytes, varMap); err != nil {
-		ErrorAndExit(cmd, err)
-	}
-	description := descriptionBytes.String()
-
 	jiraClient, err := jira.NewClient(url, username, token)
 	if err != nil {
 		ErrorAndExit(cmd, err)
 	}
 
-	ticketKey, err := jiraClient.CreateIssue(epicId, team, summary, description)
+	campaign := &model.Campaign{
+		Epic:     epic,
+		Project:  project,
+		Summary:  summary,
+		Template: template,
+	}
+	ticket := &model.Ticket{Data: varMap}
+
+	issue, err := jiraClient.CreateTicket(ticket, campaign)
 	if err != nil {
 		ErrorAndExit(cmd, err)
 	}
 
-	cmd.Printf("Ticket %s successfully created in JIRA", ticketKey)
+	cmd.Printf("Ticket %s successfully created in JIRA", issue.Key)
 	return nil
 }
 

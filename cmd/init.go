@@ -15,14 +15,16 @@ func InitCmd() *cobra.Command {
 		Run:   initCmdF,
 	}
 
-	cmd.Flags().StringP("url", "u", "", "the jira server URL")
+	cmd.Flags().StringP("url", "u", "", "The jira server URL")
 	_ = cmd.MarkFlagRequired("url")
-	cmd.Flags().StringP("project", "p", "", "the jira project key to associate the tickets with")
+	cmd.Flags().StringP("project", "p", "", "The jira project key to associate the tickets with")
 	_ = cmd.MarkFlagRequired("project")
-	cmd.Flags().StringP("epic", "e", "", "the epic id to associate this campaign with")
+	cmd.Flags().StringP("epic", "e", "", "The epic id to associate this campaign with")
 	_ = cmd.MarkFlagRequired("epic")
-	cmd.Flags().StringP("summary", "s", "", "the summary of the tickets")
+	cmd.Flags().StringP("summary", "s", "", "The summary of the tickets")
 	_ = cmd.MarkFlagRequired("summary")
+	cmd.Flags().StringP("template", "t", "", "The template path for the description of the tickets")
+	_ = cmd.MarkFlagRequired("template")
 
 	return cmd
 }
@@ -32,12 +34,14 @@ func initCmdF(cmd *cobra.Command, _ []string) {
 	project, _ := cmd.Flags().GetString("project")
 	epic, _ := cmd.Flags().GetString("epic")
 	summary, _ := cmd.Flags().GetString("summary")
+	template, _ := cmd.Flags().GetString("template")
 
 	cmp := &model.Campaign{
-		Url:     url,
-		Project: project,
-		Epic:    epic,
-		Summary: summary,
+		Url:      url,
+		Project:  project,
+		Epic:     epic,
+		Summary:  summary,
+		Template: template,
 	}
 	if err := campaign.Save(cmp); err != nil {
 		ErrorAndExit(cmd, err)

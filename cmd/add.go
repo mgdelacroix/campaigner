@@ -23,7 +23,7 @@ func GrepAddCmd() *cobra.Command {
 		Run:     grepAddCmdF,
 	}
 
-	cmd.Flags().BoolP("file-only", "f", false, "generates one ticket per file instead of per match")
+	cmd.Flags().BoolP("file-only", "f", false, "Generates one ticket per file instead of per match")
 
 	return cmd
 }
@@ -38,7 +38,7 @@ func AgAddCmd() *cobra.Command {
 		RunE:    agAddCmdF,
 	}
 
-	cmd.Flags().BoolP("file-only", "f", false, "generates one ticket per file instead of per match")
+	cmd.Flags().BoolP("file-only", "f", false, "Generates one ticket per file instead of per match")
 
 	return cmd
 }
@@ -53,7 +53,7 @@ func GovetAddCmd() *cobra.Command {
 		RunE:    govetAddCmdF,
 	}
 
-	cmd.Flags().BoolP("file-only", "f", false, "generates one ticket per file instead of per match")
+	cmd.Flags().BoolP("file-only", "f", false, "Generates one ticket per file instead of per match")
 
 	return cmd
 }
@@ -67,7 +67,7 @@ func CsvAddCmd() *cobra.Command {
 		RunE:    csvAddCmdF,
 	}
 
-	cmd.Flags().BoolP("file-only", "f", false, "generates one ticket per file instead of per match")
+	cmd.Flags().BoolP("file-only", "f", false, "Generates one ticket per file instead of per match")
 
 	return cmd
 }
