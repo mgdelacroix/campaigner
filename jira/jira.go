@@ -1,9 +1,9 @@
 package jira
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
-	"bytes"
 	"text/template"
 
 	"git.ctrlz.es/mgdelacroix/campaigner/model"
@@ -40,10 +40,10 @@ func (c *JiraClient) GetIssueFromTicket(ticket *model.Ticket, campaign *model.Ca
 
 	data := map[string]string{
 		"Description": description,
-		"Summary": summary,
-		"Project": campaign.Project,
-		"Issue Type": "Story",
-		"Epic Link": campaign.Epic,
+		"Summary":     summary,
+		"Project":     campaign.Project,
+		"Issue Type":  "Story",
+		"Epic Link":   campaign.Epic,
 	}
 
 	if team, ok := ticket.Data["team"]; ok {
