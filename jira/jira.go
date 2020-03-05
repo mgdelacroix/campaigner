@@ -61,10 +61,6 @@ func (c *JiraClient) GetIssueFromTicket(ticket *model.Ticket, cmp *model.Campaig
 		"Epic Link":   cmp.Epic,
 	}
 
-	if team, ok := ticket.Data["team"]; ok {
-		data["team"] = team.(string)
-	}
-
 	createMetaInfo, _, err := c.Issue.GetCreateMeta(cmp.Project)
 	if err != nil {
 		return nil, err
