@@ -120,7 +120,7 @@ func createJiraTicketStandaloneCmdF(cmd *cobra.Command, _ []string) error {
 	}
 	ticket := &model.Ticket{Data: varMap}
 
-	issue, err := jiraClient.CreateTicket(ticket, campaign)
+	issue, err := jiraClient.PublishTicket(ticket, campaign)
 	if err != nil {
 		ErrorAndExit(cmd, err)
 	}

@@ -10,3 +10,12 @@ type Campaign struct {
 	Template  string    `json:"template"`
 	Tickets   []*Ticket `json:"tickets,omitempty"`
 }
+
+func (c *Campaign) NextUnpublishedTicket() *Ticket {
+	for _, ticket := range c.Tickets {
+		if ticket.JiraLink == "" {
+			return ticket
+		}
+	}
+	return nil
+}
