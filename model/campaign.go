@@ -1,5 +1,10 @@
 package model
 
+import (
+	"fmt"
+	"io"
+)
+
 // ToDo: add key-value extra params as a map to allow for customfield_whatever = team
 type Campaign struct {
 	Url       string    `json:"url"`
@@ -18,4 +23,17 @@ func (c *Campaign) NextUnpublishedTicket() *Ticket {
 		}
 	}
 	return nil
+}
+
+func (c *Campaign) PrintStatus(w io.Writer) {
+	fmt.Fprintf(w, "Url: %s\n", c.Url)
+	fmt.Fprintf(w, "Project: %s\n", c.Project)
+	fmt.Fprintf(w, "Epic: %s\n", c.Epic)
+	fmt.Fprintf(w, "Issue Type: %s\n", c.IssueType)
+	fmt.Fprintf(w, "Summary: %s\n", c.Summary)
+	fmt.Fprintf(w, "Template: %s\n", c.Template)
+
+	for _, ticket := range c.Tickets {
+		ticket.PrintStatus(w)
+	}
 }

@@ -2,11 +2,13 @@ package model
 
 import (
 	"fmt"
+	"io"
 )
 
 type Ticket struct {
 	GithubLink string                 `json:"githubLink,omitempty"`
 	JiraLink   string                 `json:"jiraLink,omitempty"`
+	Summary    string                 `json:"summary,omitempty"`
 	Data       map[string]interface{} `json:"data,omitempty"`
 }
 
@@ -28,4 +30,8 @@ func RemoveDuplicateTickets(tickets []*Ticket, fileOnly bool) []*Ticket {
 	}
 
 	return cleanTickets
+}
+
+func (t *Ticket) PrintStatus(w io.Writer) {
+	fmt.Fprintf(w, " [%s] %s\n", t.JiraLink, t.Summary)
 }

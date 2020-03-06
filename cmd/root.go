@@ -18,6 +18,7 @@ func RootCmd() *cobra.Command {
 		FilterCmd(),
 		InitCmd(),
 		StandaloneCmd(),
+		StatusCmd(),
 		TokenCmd(),
 		PublishCmd(),
 		SyncCmd(),

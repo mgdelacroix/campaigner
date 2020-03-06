@@ -127,7 +127,13 @@ func (c *JiraClient) PublishNextTicket(cmp *model.Campaign, dryRun bool) (bool, 
 		return true, nil
 	}
 
+	issue, _, err = c.Issue.Get(issue.Key, nil)
+	if err != nil {
+		return false, err
+	}
+
 	ticket.JiraLink = issue.Key
+	ticket.Summary = issue.Fields.Summary
 	if err := campaign.Save(cmp); err != nil {
 		return false, err
 	}
