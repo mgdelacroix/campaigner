@@ -8,10 +8,10 @@ import (
 
 func StatusCmd() *cobra.Command {
 	return &cobra.Command{
-		Use: "status",
+		Use:   "status",
 		Short: "Prints the current status of the campaign",
-		Args: cobra.NoArgs,
-		Run: statusCmdF,
+		Args:  cobra.NoArgs,
+		Run:   statusCmdF,
 	}
 }
 

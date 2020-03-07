@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bufio"
+	"encoding/csv"
 	"fmt"
 	"os"
 	"strconv"
@@ -59,17 +60,13 @@ func GovetAddCmd() *cobra.Command {
 }
 
 func CsvAddCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	return &cobra.Command{
 		Use:     "csv",
 		Short:   "Generates the tickets reading a csv file",
-		Example: `  campaigner add csv --file tickets.csv`,
-		Args:    cobra.NoArgs,
-		RunE:    csvAddCmdF,
+		Example: `  campaigner add csv tickets.csv`,
+		Args:    cobra.ExactArgs(1),
+		Run:     csvAddCmdF,
 	}
-
-	cmd.Flags().BoolP("file-only", "f", false, "Generates one ticket per file instead of per match")
-
-	return cmd
 }
 
 func AddCmd() *cobra.Command {
@@ -150,6 +147,33 @@ func govetAddCmdF(_ *cobra.Command, _ []string) error {
 	return fmt.Errorf("not implemented yet")
 }
 
-func csvAddCmdF(cmd *cobra.Command, _ []string) error {
-	return fmt.Errorf("not implemented yet")
+func csvAddCmdF(cmd *cobra.Command, args []string) {
+	file, err := os.Open(args[0])
+	if err != nil {
+		ErrorAndExit(cmd, err)
+	}
+
+	cmp, err := campaign.Read()
+	if err != nil {
+		ErrorAndExit(cmd, err)
+	}
+
+	csvReader := csv.NewReader(bufio.NewReader(file))
+	records, err := csvReader.ReadAll()
+	if err != nil {
+		ErrorAndExit(cmd, err)
+	}
+
+	headers := records[0]
+	for _, line := range records[1:] {
+		data := map[string]interface{}{}
+		for i, header := range headers {
+			data[header] = line[i]
+		}
+		cmp.Tickets = append(cmp.Tickets, &model.Ticket{Data: data})
+	}
+
+	if err := campaign.Save(cmp); err != nil {
+		ErrorAndExit(cmd, err)
+	}
 }
