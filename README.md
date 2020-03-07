@@ -1,6 +1,13 @@
 # Campaigner
 
-Command line tool to create and manage community campaigns.
+Command line tool to create and manage community campaigns. `campaigner` takes care of all the campaign lifecycle, starting with getting information to generate the tickets, then publishing them in jira and github and finally tracking their status, the campaign progress and generating reports.
+
+ - `campaigner init` generates the campaign file, linking it to the jira instance and github repository and to the epic issue that will host each campaign ticket.
+ - `campaigner add` parses information from different sources and uses it to generate tickets for the campaign.
+ - `campaigner publish` builds the tickets information and publishes it both to jira and github.
+ - `campaigner sync` downloads updated information of the campaign progress.
+ - `campaigner status` shows the current campaign data and progression.
+ - `campaigner report` generates reports from the campaign data.
 
 ## Usage
 
@@ -18,6 +25,7 @@ Available Commands:
   init        Creates a new campaign in the current directory
   publish     Publishes the campaign tickets in different providers
   standalone  Standalone fire-and-forget commands
+  status      Prints the current status of the campaign
   sync        Synchronizes the status of the tickets with remote providers
   token       Subcommands related to tokens
 
@@ -26,36 +34,3 @@ Flags:
 
 Use "campaigner [command] --help" for more information about a command.
 ```
-
-## Application flow
-
-1. Run `campaigner set-token` to set the tokens for `jira/github`.
-2. Run `campaigner init` to create a new community campaign.
-3. Run `campaigner add` to add new tickets based either on a `grep/ag`
-   command or a `govet` check.
-4. Run `campaigner filter` to interactively remove false matches.
-5. Run `campaigner status` to see the status of each one of the
-   tickets. The tickets can be in an `unpublished`, `jira`, `github`
-   and `completed` state.
-6. Modify the `template.md` file to adjust the ticket templates.
-7. Run `campaigner publish` to create the tickets in `jira` based on
-   the template.
-8. Possible next step to publish the tickets from `jira` to `github`.
-
-## Roadmap
-
-- [x] Modify the add command to only act on `stdin`, using the
-      `--grep` and `--govet` flags to distinguish how to parse the
-      input.
-- [x] Add `standalone` group of commands.
-- [ ] Parametrise the atlassian API url.
-- [x] Add file only mode to the `add` command.
-- [ ] Add file path normalisation to the `add` command.
-- [ ] Add `--ag` to the `add` command.
-- [ ] Add the `publish` command.
-- [ ] Add state management to the tickets and links to the jira
-      issues.
-- [ ] Add the `sync` command to synchronize the issue state.
-- [ ] Add the `filter` command with a button to get context and the
-      option to add fn name.
-- [ ] Add a way to `add --csv --file tickets.csv`
