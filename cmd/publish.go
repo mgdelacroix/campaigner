@@ -2,12 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"context"
 
 	"git.ctrlz.es/mgdelacroix/campaigner/campaign"
 	"git.ctrlz.es/mgdelacroix/campaigner/config"
-	"git.ctrlz.es/mgdelacroix/campaigner/jira"
 	"git.ctrlz.es/mgdelacroix/campaigner/github"
+	"git.ctrlz.es/mgdelacroix/campaigner/jira"
 
 	"github.com/spf13/cobra"
 )
@@ -32,7 +31,7 @@ func GithubPublishCmd() *cobra.Command {
 		Use:   "github",
 		Short: "Publishes the campaign tickets in github",
 		Args:  cobra.NoArgs,
-		Run:   githubPublishCmdF,
+		RunE:  githubPublishCmdF,
 	}
 
 	cmd.Flags().BoolP("all", "a", false, "Publish all the tickets of the campaign")
@@ -96,25 +95,39 @@ func jiraPublishCmdF(cmd *cobra.Command, _ []string) error {
 	return nil
 }
 
-func githubPublishCmdF(cmd *cobra.Command, _ []string) {
+func githubPublishCmdF(cmd *cobra.Command, _ []string) error {
+	all, _ := cmd.Flags().GetBool("all")
+	batch, _ := cmd.Flags().GetInt("batch")
+	dryRun, _ := cmd.Flags().GetBool("dry-run")
+
+	if !all && batch == 0 {
+		return fmt.Errorf("One of --all or --batch flags is required")
+	}
+
 	cfg, err := config.ReadConfig()
 	if err != nil {
 		ErrorAndExit(cmd, err)
 	}
 
-	// cmp, err := campaign.Read()
-	// if err != nil {
-	// 	ErrorAndExit(cmd, err)
-	// }
-
-	githubClient := github.NewClient("my/repo", cfg.GithubToken)
-
-	repos, _, err := githubClient.Repositories.List(context.Background(), "", nil)
+	cmp, err := campaign.Read()
 	if err != nil {
 		ErrorAndExit(cmd, err)
 	}
 
-	for _, repo := range repos {
-		cmd.Println(*repo.Name)
+	githubClient := github.NewClient("my/repo", cfg.GithubToken)
+
+	if all {
+		count, err := githubClient.PublishAll(cmp, dryRun)
+		if err != nil {
+			ErrorAndExit(cmd, err)
+		}
+		cmd.Printf("All %d tickets successfully published in github\n", count)
+	} else {
+		if err := githubClient.PublishBatch(cmp, batch, dryRun); err != nil {
+			ErrorAndExit(cmd, err)
+		}
+		cmd.Printf("Batch of %d tickets successfully published in github\n", batch)
 	}
+
+	return nil
 }

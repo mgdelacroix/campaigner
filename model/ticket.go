@@ -6,7 +6,7 @@ import (
 )
 
 type Ticket struct {
-	GithubLink string                 `json:"githubLink,omitempty"`
+	GithubLink int64                  `json:"githubLink,omitempty"`
 	JiraLink   string                 `json:"jiraLink,omitempty"`
 	Summary    string                 `json:"summary,omitempty"`
 	Data       map[string]interface{} `json:"data,omitempty"`

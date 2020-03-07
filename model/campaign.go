@@ -16,9 +16,18 @@ type Campaign struct {
 	Tickets   []*Ticket `json:"tickets,omitempty"`
 }
 
-func (c *Campaign) NextUnpublishedTicket() *Ticket {
+func (c *Campaign) NextJiraUnpublishedTicket() *Ticket {
 	for _, ticket := range c.Tickets {
 		if ticket.JiraLink == "" {
+			return ticket
+		}
+	}
+	return nil
+}
+
+func (c *Campaign) NextGithubUnpublishedTicket() *Ticket {
+	for _, ticket := range c.Tickets {
+		if ticket.JiraLink != "" && ticket.GithubLink != 0 {
 			return ticket
 		}
 	}

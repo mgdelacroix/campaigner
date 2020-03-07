@@ -113,7 +113,7 @@ func (c *JiraClient) GetIssue(issueNo string) (*jira.Issue, error) {
 }
 
 func (c *JiraClient) PublishNextTicket(cmp *model.Campaign, dryRun bool) (bool, error) {
-	ticket := cmp.NextUnpublishedTicket()
+	ticket := cmp.NextJiraUnpublishedTicket()
 	if ticket == nil {
 		return false, nil
 	}
