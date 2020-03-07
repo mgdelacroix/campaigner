@@ -2,10 +2,12 @@ package cmd
 
 import (
 	"fmt"
+	"context"
 
 	"git.ctrlz.es/mgdelacroix/campaigner/campaign"
 	"git.ctrlz.es/mgdelacroix/campaigner/config"
 	"git.ctrlz.es/mgdelacroix/campaigner/jira"
+	"git.ctrlz.es/mgdelacroix/campaigner/github"
 
 	"github.com/spf13/cobra"
 )
@@ -13,9 +15,24 @@ import (
 func JiraPublishCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "jira",
-		Short: "Publishes the campaign tickets in JIRA",
+		Short: "Publishes the campaign tickets in jira",
 		Args:  cobra.NoArgs,
 		RunE:  jiraPublishCmdF,
+	}
+
+	cmd.Flags().BoolP("all", "a", false, "Publish all the tickets of the campaign")
+	cmd.Flags().IntP("batch", "b", 0, "Number of tickets to publish")
+	cmd.Flags().Bool("dry-run", false, "Print the tickets information instead of publishing them")
+
+	return cmd
+}
+
+func GithubPublishCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "github",
+		Short: "Publishes the campaign tickets in github",
+		Args:  cobra.NoArgs,
+		Run:   githubPublishCmdF,
 	}
 
 	cmd.Flags().BoolP("all", "a", false, "Publish all the tickets of the campaign")
@@ -32,6 +49,7 @@ func PublishCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
+		GithubPublishCmd(),
 		JiraPublishCmd(),
 	)
 
@@ -76,4 +94,27 @@ func jiraPublishCmdF(cmd *cobra.Command, _ []string) error {
 	}
 
 	return nil
+}
+
+func githubPublishCmdF(cmd *cobra.Command, _ []string) {
+	cfg, err := config.ReadConfig()
+	if err != nil {
+		ErrorAndExit(cmd, err)
+	}
+
+	// cmp, err := campaign.Read()
+	// if err != nil {
+	// 	ErrorAndExit(cmd, err)
+	// }
+
+	githubClient := github.NewClient("my/repo", cfg.GithubToken)
+
+	repos, _, err := githubClient.Repositories.List(context.Background(), "", nil)
+	if err != nil {
+		ErrorAndExit(cmd, err)
+	}
+
+	for _, repo := range repos {
+		cmd.Println(*repo.Name)
+	}
 }
