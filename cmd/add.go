@@ -137,6 +137,7 @@ func grepAddCmdF(cmd *cobra.Command, _ []string) {
 	if err := campaign.Save(cmp); err != nil {
 		ErrorAndExit(cmd, err)
 	}
+	cmd.Printf("%d tickets have been added\n", len(tickets))
 }
 
 func agAddCmdF(_ *cobra.Command, _ []string) error {
@@ -176,4 +177,5 @@ func csvAddCmdF(cmd *cobra.Command, args []string) {
 	if err := campaign.Save(cmp); err != nil {
 		ErrorAndExit(cmd, err)
 	}
+	cmd.Printf("%d tickets have been added\n", len(records[1:]))
 }
