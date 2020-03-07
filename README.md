@@ -9,6 +9,14 @@ Command line tool to create and manage community campaigns. `campaigner` takes c
  - `campaigner status` shows the current campaign data and progression.
  - `campaigner report` generates reports from the campaign data.
 
+## Install
+
+To install `campaigner`, if you have the golang environment set up, you just have to run:
+
+```sh
+go get git.ctrlz.es/mgdelacroix/campaigner
+```
+
 ## Usage
 
 ```sh
