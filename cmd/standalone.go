@@ -37,8 +37,6 @@ func CreateJiraTicketStandaloneCmd() *cobra.Command {
 	_ = cmd.MarkFlagRequired("url")
 	cmd.Flags().String("epic", "", "The jira epic id to associate the ticket with")
 	_ = cmd.MarkFlagRequired("epic")
-	cmd.Flags().StringP("project", "p", "", "The jira project key to associate the tickets with")
-	_ = cmd.MarkFlagRequired("project")
 	cmd.Flags().String("summary", "", "The summary of the ticket")
 	_ = cmd.MarkFlagRequired("summary")
 	cmd.Flags().String("template", "", "The template to render the description of the ticket")
@@ -82,13 +80,14 @@ func getVarMap(vars []string) (map[string]interface{}, error) {
 func createJiraTicketStandaloneCmdF(cmd *cobra.Command, _ []string) error {
 	url, _ := cmd.Flags().GetString("url")
 	epic, _ := cmd.Flags().GetString("epic")
-	project, _ := cmd.Flags().GetString("project")
 	username, _ := cmd.Flags().GetString("username")
 	token, _ := cmd.Flags().GetString("token")
 	summary, _ := cmd.Flags().GetString("summary")
 	template, _ := cmd.Flags().GetString("template")
 	vars, _ := cmd.Flags().GetStringSlice("vars")
 	dryRun, _ := cmd.Flags().GetBool("dry-run")
+
+	project := strings.Split(epic, "-")[0]
 
 	if username == "" || token == "" {
 		cfg, err := config.ReadConfig()
