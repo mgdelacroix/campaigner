@@ -1,0 +1,12 @@
+image: golang:1.14-buster
+
+build:
+  stage: build
+  script:
+    - make build
+  artifacts:
+    paths:
+      - campaigner
+
+stages:
+  - build
