@@ -77,7 +77,8 @@ func CsvAddCmd() *cobra.Command {
 func AddCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add",
-		Short: "Adds tickets to the campaign from the output of grep/ag/govet",
+		Short: "Adds tickets to the campaign",
+		Long:  "Adds tickets to the campaign from the output of grep/ag/govet",
 	}
 
 	cmd.AddCommand(

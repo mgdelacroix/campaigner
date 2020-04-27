@@ -15,7 +15,7 @@ func RootCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		AddCmd(),
-		FilterCmd(),
+		// FilterCmd(),
 		InitCmd(),
 		StatusCmd(),
 		PublishCmd(),

@@ -43,7 +43,8 @@ func GithubPublishCmd() *cobra.Command {
 func PublishCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "publish",
-		Short: "Publishes the campaign tickets in different providers",
+		Short: "Publishes campaign tickets",
+		Long:  "Publishes the campaign tickets in both Jira and Github",
 	}
 
 	cmd.AddCommand(

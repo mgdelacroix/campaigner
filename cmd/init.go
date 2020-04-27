@@ -15,7 +15,8 @@ import (
 func InitCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "init",
-		Short: "Creates a new campaign in the current directory",
+		Short: "Creates a campaign",
+		Long:  "Creates a new campaign in the current directory",
 		Example: `  campaigner init \
     --jira-username johndoe \
     --jira-token secret \

@@ -9,7 +9,8 @@ import (
 func StatusCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "status",
-		Short: "Prints the current status of the campaign",
+		Short: "Prints the campaign status",
+		Long:  "Prints the current status of the campaign and its tickets",
 		Args:  cobra.NoArgs,
 		Run:   statusCmdF,
 	}
@@ -21,5 +22,5 @@ func statusCmdF(cmd *cobra.Command, _ []string) {
 		ErrorAndExit(cmd, err)
 	}
 
-	cmp.PrintStatus(cmd.OutOrStdout())
+	cmp.PrintStatus()
 }

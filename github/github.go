@@ -70,7 +70,7 @@ func (c *GithubClient) PublishNextTicket(cmp *model.Campaign, dryRun bool) (bool
 		return true, nil
 	}
 
-	ticket.GithubLink = *issue.ID
+	ticket.GithubLink = issue.GetNumber()
 	if err := campaign.Save(cmp); err != nil {
 		return false, err
 	}

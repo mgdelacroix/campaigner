@@ -2,11 +2,10 @@ package model
 
 import (
 	"fmt"
-	"io"
 )
 
 type Ticket struct {
-	GithubLink   int64                  `json:"github_link,omitempty"`
+	GithubLink   int                    `json:"github_link,omitempty"`
 	GithubStatus string                 `json:"github_status,omitempty"`
 	JiraLink     string                 `json:"jira_link,omitempty"`
 	JiraStatus   string                 `json:"jira_status,omitempty"`
@@ -35,8 +34,16 @@ func RemoveDuplicateTickets(tickets []*Ticket, fileOnly bool) []*Ticket {
 	return cleanTickets
 }
 
-func (t *Ticket) PrintStatus(w io.Writer) {
+func (t *Ticket) IsPublishedJira() bool {
+	return t.JiraLink != ""
+}
+
+func (t *Ticket) IsPublishedGithub() bool {
+	return t.JiraLink != "" && t.GithubLink != 0
+}
+
+func (t *Ticket) PrintStatus() {
 	if t.Summary != "" {
-		fmt.Fprintf(w, "[%s] %s\n", t.JiraLink, t.Summary)
+		fmt.Printf("[%s] %s\n", t.JiraLink, t.Summary)
 	}
 }

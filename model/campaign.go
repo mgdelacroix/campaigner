@@ -3,7 +3,6 @@ package model
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"strings"
 	"text/template"
 )
@@ -34,7 +33,7 @@ type Campaign struct {
 
 func (c *Campaign) NextJiraUnpublishedTicket() *Ticket {
 	for _, ticket := range c.Tickets {
-		if ticket.JiraLink == "" {
+		if !ticket.IsPublishedJira() {
 			return ticket
 		}
 	}
@@ -43,26 +42,26 @@ func (c *Campaign) NextJiraUnpublishedTicket() *Ticket {
 
 func (c *Campaign) NextGithubUnpublishedTicket() *Ticket {
 	for _, ticket := range c.Tickets {
-		if ticket.JiraLink != "" && ticket.GithubLink == 0 {
+		if ticket.IsPublishedJira() && !ticket.IsPublishedGithub() {
 			return ticket
 		}
 	}
 	return nil
 }
 
-func (c *Campaign) PrintStatus(w io.Writer) {
-	fmt.Fprintf(w, "JIRA URL: %s\n", c.Jira.Url)
-	fmt.Fprintf(w, "JIRA Project: %s\n", c.Jira.Project)
-	fmt.Fprintf(w, "JIRA Epic: %s\n", c.Jira.Epic)
-	fmt.Fprintf(w, "JIRA Issue Type: %s\n", c.Jira.IssueType)
-	fmt.Fprintf(w, "GitHub Repo: %s\n", c.Github.Repo)
-	fmt.Fprintf(w, "GitHub Labels: %s\n", c.Github.Labels)
-	fmt.Fprintf(w, "Summary: %s\n", c.Summary)
-	fmt.Fprintf(w, "Template: %s\n", c.Template)
-	fmt.Fprintln(w, "")
+func (c *Campaign) PrintStatus() {
+	fmt.Printf("JIRA URL: %s\n", c.Jira.Url)
+	fmt.Printf("JIRA Project: %s\n", c.Jira.Project)
+	fmt.Printf("JIRA Epic: %s\n", c.Jira.Epic)
+	fmt.Printf("JIRA Issue Type: %s\n", c.Jira.IssueType)
+	fmt.Printf("GitHub Repo: %s\n", c.Github.Repo)
+	fmt.Printf("GitHub Labels: %s\n", c.Github.Labels)
+	fmt.Printf("Summary: %s\n", c.Summary)
+	fmt.Printf("Template: %s\n", c.Template)
+	fmt.Println("")
 
 	for _, ticket := range c.Tickets {
-		ticket.PrintStatus(w)
+		ticket.PrintStatus()
 	}
 }
 
