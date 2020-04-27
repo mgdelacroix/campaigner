@@ -32,10 +32,8 @@ Available Commands:
   help        Help about any command
   init        Creates a new campaign in the current directory
   publish     Publishes the campaign tickets in different providers
-  standalone  Standalone fire-and-forget commands
   status      Prints the current status of the campaign
   sync        Synchronizes the status of the tickets with remote providers
-  token       Subcommands related to tokens
 
 Flags:
   -h, --help   help for campaigner
