@@ -50,9 +50,9 @@ func AgAddCmd() *cobra.Command {
 
 func GovetAddCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "govet",
-		Short:   "Generates the tickets reading govet's output from stdin",
-		Long:    `Generates tickets for the campaign reading the output of govet from the standard input. Govet usually writes to the standard error descriptor, so the output must be redirected. The generated ticket will contain three fields:
+		Use:   "govet",
+		Short: "Generates the tickets reading govet's output from stdin",
+		Long: `Generates tickets for the campaign reading the output of govet from the standard input. Govet usually writes to the standard error descriptor, so the output must be redirected. The generated ticket will contain three fields:
 
  - filename: the filename yield by grep
  - lineNo: the line number yield by grep
