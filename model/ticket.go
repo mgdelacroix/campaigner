@@ -6,10 +6,13 @@ import (
 )
 
 type Ticket struct {
-	GithubLink int64                  `json:"githubLink,omitempty"`
-	JiraLink   string                 `json:"jiraLink,omitempty"`
-	Summary    string                 `json:"summary,omitempty"`
-	Data       map[string]interface{} `json:"data,omitempty"`
+	GithubLink   int64                  `json:"github_link,omitempty"`
+	GithubStatus string                 `json:"github_status,omitempty"`
+	JiraLink     string                 `json:"jira_link,omitempty"`
+	JiraStatus   string                 `json:"jira_status,omitempty"`
+	Summary      string                 `json:"summary,omitempty"`
+	Description  string                 `json:"description,omitempty"`
+	Data         map[string]interface{} `json:"data,omitempty"`
 }
 
 func RemoveDuplicateTickets(tickets []*Ticket, fileOnly bool) []*Ticket {
@@ -33,5 +36,7 @@ func RemoveDuplicateTickets(tickets []*Ticket, fileOnly bool) []*Ticket {
 }
 
 func (t *Ticket) PrintStatus(w io.Writer) {
-	fmt.Fprintf(w, " [%s] %s\n", t.JiraLink, t.Summary)
+	if t.Summary != "" {
+		fmt.Fprintf(w, "[%s] %s\n", t.JiraLink, t.Summary)
+	}
 }

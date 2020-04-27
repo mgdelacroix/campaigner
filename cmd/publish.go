@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"git.ctrlz.es/mgdelacroix/campaigner/campaign"
-	"git.ctrlz.es/mgdelacroix/campaigner/config"
 	"git.ctrlz.es/mgdelacroix/campaigner/github"
 	"git.ctrlz.es/mgdelacroix/campaigner/jira"
 
@@ -64,17 +63,12 @@ func jiraPublishCmdF(cmd *cobra.Command, _ []string) error {
 		return fmt.Errorf("One of --all or --batch flags is required")
 	}
 
-	cfg, err := config.ReadConfig()
-	if err != nil {
-		ErrorAndExit(cmd, err)
-	}
-
 	cmp, err := campaign.Read()
 	if err != nil {
 		ErrorAndExit(cmd, err)
 	}
 
-	jiraClient, err := jira.NewClient(cmp.Url, cfg.JiraUsername, cfg.JiraToken)
+	jiraClient, err := jira.NewClient(cmp.Jira.Url, cmp.Jira.Username, cmp.Jira.Token)
 	if err != nil {
 		ErrorAndExit(cmd, err)
 	}
@@ -104,17 +98,12 @@ func githubPublishCmdF(cmd *cobra.Command, _ []string) error {
 		return fmt.Errorf("One of --all or --batch flags is required")
 	}
 
-	cfg, err := config.ReadConfig()
-	if err != nil {
-		ErrorAndExit(cmd, err)
-	}
-
 	cmp, err := campaign.Read()
 	if err != nil {
 		ErrorAndExit(cmd, err)
 	}
 
-	githubClient := github.NewClient("my/repo", cfg.GithubToken)
+	githubClient := github.NewClient(cmp.Github.Repo, cmp.Github.Token)
 
 	if all {
 		count, err := githubClient.PublishAll(cmp, dryRun)

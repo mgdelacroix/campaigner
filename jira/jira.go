@@ -56,22 +56,22 @@ func (c *JiraClient) GetIssueFromTicket(ticket *model.Ticket, cmp *model.Campaig
 	data := map[string]string{
 		"Description": description,
 		"Summary":     summary,
-		"Project":     cmp.Project,
-		"Issue Type":  cmp.IssueType,
-		"Epic Link":   cmp.Epic,
+		"Project":     cmp.Jira.Project,
+		"Issue Type":  cmp.Jira.IssueType,
+		"Epic Link":   cmp.Jira.Epic,
 	}
 
-	createMetaInfo, _, err := c.Issue.GetCreateMeta(cmp.Project)
+	createMetaInfo, _, err := c.Issue.GetCreateMeta(cmp.Jira.Project)
 	if err != nil {
 		return nil, err
 	}
 
-	project := createMetaInfo.GetProjectWithKey(cmp.Project)
+	project := createMetaInfo.GetProjectWithKey(cmp.Jira.Project)
 	if project == nil {
-		return nil, fmt.Errorf("Error retrieving project with key %s", cmp.Project)
+		return nil, fmt.Errorf("Error retrieving project with key %s", cmp.Jira.Project)
 	}
 
-	issueType := project.GetIssueTypeWithName(cmp.IssueType)
+	issueType := project.GetIssueTypeWithName(cmp.Jira.IssueType)
 	if issueType == nil {
 		return nil, fmt.Errorf("Error retrieving issue type with name Story")
 	}
@@ -134,6 +134,7 @@ func (c *JiraClient) PublishNextTicket(cmp *model.Campaign, dryRun bool) (bool, 
 
 	ticket.JiraLink = issue.Key
 	ticket.Summary = issue.Fields.Summary
+	ticket.Description = issue.Fields.Description
 	if err := campaign.Save(cmp); err != nil {
 		return false, err
 	}
@@ -156,7 +157,7 @@ func (c *JiraClient) PublishAll(cmp *model.Campaign, dryRun bool) (int, error) {
 }
 
 func (c *JiraClient) PublishBatch(cmp *model.Campaign, batch int, dryRun bool) error {
-	for i := 0; i <= batch; i++ {
+	for i := 1; i <= batch; i++ {
 		next, err := c.PublishNextTicket(cmp, dryRun)
 		if err != nil {
 			return err

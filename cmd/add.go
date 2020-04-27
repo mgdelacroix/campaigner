@@ -16,9 +16,14 @@ import (
 
 func GrepAddCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "grep",
-		Short:   "Generates the tickets reading grep's output from stdin",
-		Long:    "Generates tickets for the campaign reading from the standard input the output grep. The grep command must be run with the -n flag",
+		Use:   "grep",
+		Short: "Generates the tickets reading grep's output from stdin",
+		Long: `Generates tickets for the campaign reading from the standard input the output grep. The grep command must be run with the -n flag. The generated ticket will contain three fields:
+
+ - filename: the filename yield by grep
+ - lineNo: the line number yield by grep
+ - text: the trimmed line that grep captured for the expression
+`,
 		Example: `  grep -nriIF --include \*.go cobra.Command | campaigner add grep`,
 		Args:    cobra.NoArgs,
 		Run:     grepAddCmdF,
@@ -104,7 +109,7 @@ func parseGrepLine(line string) (*model.Ticket, error) {
 		Data: map[string]interface{}{
 			"filename": filename,
 			"lineNo":   lineNo,
-			"text":     text,
+			"text":     strings.TrimSpace(text),
 		},
 	}, nil
 }

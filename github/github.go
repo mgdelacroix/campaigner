@@ -2,10 +2,13 @@ package github
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 
 	"git.ctrlz.es/mgdelacroix/campaigner/campaign"
 	"git.ctrlz.es/mgdelacroix/campaigner/model"
 
+	"github.com/StevenACoffman/j2m"
 	"github.com/google/go-github/v29/github"
 	"golang.org/x/oauth2"
 )
@@ -28,7 +31,28 @@ func NewClient(repo, token string) *GithubClient {
 }
 
 func (c *GithubClient) PublishTicket(ticket *model.Ticket, cmp *model.Campaign, dryRun bool) (*github.Issue, error) {
-	return nil, nil
+	mdDescription := j2m.JiraToMD(ticket.Description)
+	issueRequest := &github.IssueRequest{
+		Title:  &ticket.Summary,
+		Body:   &mdDescription,
+		Labels: &cmp.Github.Labels,
+	}
+
+	if dryRun {
+		b, _ := json.MarshalIndent(issueRequest, "", "  ")
+		fmt.Println(string(b))
+		return &github.Issue{
+			Title: issueRequest.Title,
+			Body:  issueRequest.Body,
+		}, nil
+	}
+
+	owner, repo := cmp.RepoComponents()
+	newIssue, _, err := c.Issues.Create(context.Background(), owner, repo, issueRequest)
+	if err != nil {
+		return nil, err
+	}
+	return newIssue, nil
 }
 
 func (c *GithubClient) PublishNextTicket(cmp *model.Campaign, dryRun bool) (bool, error) {
@@ -47,9 +71,6 @@ func (c *GithubClient) PublishNextTicket(cmp *model.Campaign, dryRun bool) (bool
 	}
 
 	ticket.GithubLink = *issue.ID
-	// move this to a publish service that can do both github and
-	// jira, as we need to update a jira issue field with the github
-	// link
 	if err := campaign.Save(cmp); err != nil {
 		return false, err
 	}
@@ -72,7 +93,7 @@ func (c *GithubClient) PublishAll(cmp *model.Campaign, dryRun bool) (int, error)
 }
 
 func (c *GithubClient) PublishBatch(cmp *model.Campaign, batch int, dryRun bool) error {
-	for i := 0; i <= batch; i++ {
+	for i := 1; i <= batch; i++ {
 		next, err := c.PublishNextTicket(cmp, dryRun)
 		if err != nil {
 			return err
