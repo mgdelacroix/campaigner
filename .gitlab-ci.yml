@@ -3,7 +3,7 @@ image: golang:1.14-buster
 fmt:
   stage: lint
   script:
-    - go fmt ./...
+    - go fmt -mod=vendor ./...
     - if [[ -n $(git status --porcelain) ]]; then echo "The code is not correctly formatted"; exit 1; fi
 
 build:
