@@ -1,5 +1,11 @@
 image: golang:1.14-buster
 
+fmt:
+  stage: lint
+  script:
+    - go fmt ./...
+    - if [[ -n $(git status --porcelain) ]]; then echo "The code is not correctly formatted"; exit 1; fi
+
 build:
   stage: build
   script:
@@ -9,4 +15,5 @@ build:
       - campaigner
 
 stages:
+  - lint
   - build
