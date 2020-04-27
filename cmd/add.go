@@ -5,20 +5,19 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
-	"strconv"
-	"strings"
 
 	"github.com/spf13/cobra"
 
 	"git.ctrlz.es/mgdelacroix/campaigner/campaign"
 	"git.ctrlz.es/mgdelacroix/campaigner/model"
+	"git.ctrlz.es/mgdelacroix/campaigner/parsers"
 )
 
 func GrepAddCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "grep",
 		Short: "Generates the tickets reading grep's output from stdin",
-		Long: `Generates tickets for the campaign reading from the standard input the output grep. The grep command must be run with the -n flag. The generated ticket will contain three fields:
+		Long: `Generates tickets for the campaign reading the output of grep from the standard input. The grep command must be run with the -n flag. The generated ticket will contain three fields:
 
  - filename: the filename yield by grep
  - lineNo: the line number yield by grep
@@ -53,10 +52,15 @@ func GovetAddCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "govet",
 		Short:   "Generates the tickets reading govet's output from stdin",
-		Long:    "Generates tickets for the campaign reading from the standard input the output grep. The grep command must be run with the -json flag",
-		Example: `  govet -json ./... | campaigner add govet`,
+		Long:    `Generates tickets for the campaign reading the output of govet from the standard input. Govet usually writes to the standard error descriptor, so the output must be redirected. The generated ticket will contain three fields:
+
+ - filename: the filename yield by grep
+ - lineNo: the line number yield by grep
+ - text: the text containing the govet error
+`,
+		Example: `  govet ./... 2>&1 | campaigner add govet`,
 		Args:    cobra.NoArgs,
-		RunE:    govetAddCmdF,
+		Run:     govetAddCmdF,
 	}
 
 	cmd.Flags().BoolP("file-only", "f", false, "Generates one ticket per file instead of per match")
@@ -91,46 +95,10 @@ func AddCmd() *cobra.Command {
 	return cmd
 }
 
-func parseGrepLine(line string) (*model.Ticket, error) {
-	// ToDo: it would be great to be able to relate a line with its
-	// parent method, at least for JS and Golang
-	parts := strings.Split(line, ":")
-	if len(parts) < 3 {
-		return nil, fmt.Errorf("cannot parse line: %s", line)
-	}
-
-	filename := parts[0]
-	lineNo, err := strconv.Atoi(parts[1])
-	if err != nil {
-		return nil, err
-	}
-	text := strings.Join(parts[2:], "")
-
-	return &model.Ticket{
-		Data: map[string]interface{}{
-			"filename": filename,
-			"lineNo":   lineNo,
-			"text":     strings.TrimSpace(text),
-		},
-	}, nil
-}
-
-func parseGrep() []*model.Ticket {
-	tickets := []*model.Ticket{}
-	scanner := bufio.NewScanner(os.Stdin)
-	for scanner.Scan() {
-		ticket, _ := parseGrepLine(scanner.Text())
-		if ticket != nil {
-			tickets = append(tickets, ticket)
-		}
-	}
-	return tickets
-}
-
 func grepAddCmdF(cmd *cobra.Command, _ []string) {
 	fileOnly, _ := cmd.Flags().GetBool("file-only")
 
-	tickets := parseGrep()
+	tickets := parsers.ParseWith(parsers.GREP)
 
 	cmp, err := campaign.Read()
 	if err != nil {
@@ -150,8 +118,23 @@ func agAddCmdF(_ *cobra.Command, _ []string) error {
 	return fmt.Errorf("not implemented yet")
 }
 
-func govetAddCmdF(_ *cobra.Command, _ []string) error {
-	return fmt.Errorf("not implemented yet")
+func govetAddCmdF(cmd *cobra.Command, _ []string) {
+	fileOnly, _ := cmd.Flags().GetBool("file-only")
+
+	tickets := parsers.ParseWith(parsers.GOVET)
+
+	cmp, err := campaign.Read()
+	if err != nil {
+		ErrorAndExit(cmd, err)
+	}
+
+	cmp.Tickets = append(cmp.Tickets, tickets...)
+	cmp.Tickets = model.RemoveDuplicateTickets(cmp.Tickets, fileOnly)
+
+	if err := campaign.Save(cmp); err != nil {
+		ErrorAndExit(cmd, err)
+	}
+	cmd.Printf("%d tickets have been added\n", len(tickets))
 }
 
 func csvAddCmdF(cmd *cobra.Command, args []string) {

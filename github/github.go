@@ -71,6 +71,10 @@ func (c *GithubClient) PublishNextTicket(cmp *model.Campaign, dryRun bool) (bool
 	}
 
 	ticket.GithubLink = issue.GetNumber()
+	if user := issue.GetUser(); user != nil {
+		ticket.GithubAssignee = user.GetLogin()
+	}
+	ticket.GithubStatus = issue.GetState()
 	if err := campaign.Save(cmp); err != nil {
 		return false, err
 	}

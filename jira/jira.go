@@ -135,6 +135,7 @@ func (c *JiraClient) PublishNextTicket(cmp *model.Campaign, dryRun bool) (bool, 
 	ticket.JiraLink = issue.Key
 	ticket.Summary = issue.Fields.Summary
 	ticket.Description = issue.Fields.Description
+	// ToDo: sync JiraStatus
 	if err := campaign.Save(cmp); err != nil {
 		return false, err
 	}
