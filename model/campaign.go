@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 	"text/template"
+
+	"github.com/fatih/color"
 )
 
 type ConfigJira struct {
@@ -50,19 +52,21 @@ func (c *Campaign) NextGithubUnpublishedTicket() *Ticket {
 }
 
 func (c *Campaign) PrintStatus() {
-	fmt.Printf("JIRA URL: %s\n", c.Jira.Url)
-	fmt.Printf("JIRA Project: %s\n", c.Jira.Project)
-	fmt.Printf("JIRA Epic: %s\n", c.Jira.Epic)
-	fmt.Printf("JIRA Issue Type: %s\n", c.Jira.IssueType)
-	fmt.Printf("GitHub Repo: %s\n", c.Github.Repo)
-	fmt.Printf("GitHub Labels: %s\n", c.Github.Labels)
-	fmt.Printf("Summary: %s\n", c.Summary)
-	fmt.Printf("Template: %s\n", c.Template)
-	fmt.Println("")
-
-	for _, ticket := range c.Tickets {
-		ticket.PrintStatus()
+	totalTickets := len(c.Tickets)
+	var totalPublishedJira, totalPublishedGithub int
+	for _, t := range c.Tickets {
+		if t.IsPublishedJira() {
+			totalPublishedJira++
+			if t.IsPublishedGithub() {
+				totalPublishedGithub++
+			}
+		}
 	}
+
+	fmt.Printf("Current campaign for %s with summary\n%s\n\n", color.GreenString(c.Github.Repo), color.CyanString(c.Summary))
+	fmt.Printf("\t%d\ttotal tickets\n", totalTickets)
+	fmt.Printf("\t%d/%d\tpublished in Jira\n", totalPublishedJira, totalTickets)
+	fmt.Printf("\t%d/%d\tpublished in Github\n\n", totalPublishedGithub, totalPublishedJira)
 }
 
 func (c *Campaign) FillTicket(t *Ticket) error {
