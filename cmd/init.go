@@ -27,7 +27,9 @@ func InitCmd() *cobra.Command {
     --repository johndoe/awesomeproject \
     -l 'Area/API' -l 'Tech/Go' \
     --summary 'Refactor {{.function}} to inject the configuration service' \
-    --template ./refactor-config.tmpl`,
+    --issue-template ./refactor-config.tmpl \
+    --footer-template ./github-footer.tmpl
+`,
 		Args: cobra.NoArgs,
 		Run:  initCmdF,
 	}
@@ -40,7 +42,8 @@ func InitCmd() *cobra.Command {
 	cmd.Flags().StringP("repository", "r", "", "the github repository")
 	cmd.Flags().StringSliceP("label", "l", []string{}, "the labels to add to the Github issues")
 	cmd.Flags().StringP("summary", "s", "", "the summary of the tickets")
-	cmd.Flags().StringP("template", "t", "", "the template path for the description of the tickets")
+	cmd.Flags().StringP("issue-template", "t", "", "the template path for the description of the tickets")
+	cmd.Flags().StringP("footer-template", "f", "", "the template path to append to the github issues as a footer")
 	cmd.Flags().StringP("issue-type", "i", "Story", "the issue type to create the tickets as")
 
 	return cmd
@@ -68,7 +71,8 @@ func initCmdF(cmd *cobra.Command, _ []string) {
 	epic := getStringFlagOrAskIfEmpty("epic", "JIRA epic:")
 	repo := getStringFlagOrAskIfEmpty("repository", "GitHub repository:")
 	summary := getStringFlagOrAskIfEmpty("summary", "Ticket summary template:")
-	template := getStringFlagOrAskIfEmpty("template", "Ticket description template path:")
+	issueTemplate := getStringFlagOrAskIfEmpty("issue-template", "Ticket description template path:")
+	footerTemplate := getStringFlagOrAskIfEmpty("footer-template", "Github issue footer template path:")
 	issueType, _ := cmd.Flags().GetString("issue-type")
 	labels, _ := cmd.Flags().GetStringSlice("label")
 
@@ -88,8 +92,9 @@ func initCmdF(cmd *cobra.Command, _ []string) {
 			Repo:   repo,
 			Labels: labels,
 		},
-		Summary:  summary,
-		Template: template,
+		Summary:        summary,
+		IssueTemplate:  issueTemplate,
+		FooterTemplate: footerTemplate,
 	}
 	if err := campaign.Save(cmp); err != nil {
 		ErrorAndExit(cmd, err)

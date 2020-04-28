@@ -26,11 +26,12 @@ type ConfigGithub struct {
 
 // ToDo: add key-value extra params as a map to allow for customfield_whatever = team
 type Campaign struct {
-	Jira     ConfigJira   `json:"jira"`
-	Github   ConfigGithub `json:"github"`
-	Summary  string       `json:"summary"`
-	Template string       `json:"template"`
-	Tickets  []*Ticket    `json:"tickets,omitempty"`
+	Jira           ConfigJira   `json:"jira"`
+	Github         ConfigGithub `json:"github"`
+	Summary        string       `json:"summary"`
+	IssueTemplate  string       `json:"issue_template"`
+	FooterTemplate string       `json:"footer_template"`
+	Tickets        []*Ticket    `json:"tickets,omitempty"`
 }
 
 func (c *Campaign) NextJiraUnpublishedTicket() *Ticket {
@@ -81,7 +82,7 @@ func (c *Campaign) FillTicket(t *Ticket) error {
 	}
 	t.Summary = summaryBytes.String()
 
-	descriptionTemplate, err := template.ParseFiles(c.Template)
+	descriptionTemplate, err := template.ParseFiles(c.IssueTemplate)
 	if err != nil {
 		return err
 	}

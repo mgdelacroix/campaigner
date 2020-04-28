@@ -42,7 +42,7 @@ func (c *JiraClient) GetIssueFromTicket(ticket *model.Ticket, cmp *model.Campaig
 	}
 	summary := summaryBytes.String()
 
-	descriptionTemplate, err := template.ParseFiles(cmp.Template)
+	descriptionTemplate, err := template.ParseFiles(cmp.IssueTemplate)
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +132,7 @@ func (c *JiraClient) PublishNextTicket(cmp *model.Campaign, dryRun bool) (bool, 
 		return false, err
 	}
 
-	ticket.JiraLink = issue.Key
+	ticket.JiraLink = fmt.Sprintf("%s/browse/%s", cmp.Jira.Url, issue.Key)
 	ticket.Summary = issue.Fields.Summary
 	ticket.Description = issue.Fields.Description
 	// ToDo: sync JiraStatus

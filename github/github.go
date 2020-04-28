@@ -1,9 +1,11 @@
 package github
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"text/template"
 
 	"git.ctrlz.es/mgdelacroix/campaigner/campaign"
 	"git.ctrlz.es/mgdelacroix/campaigner/model"
@@ -30,8 +32,30 @@ func NewClient(repo, token string) *GithubClient {
 	}
 }
 
+func getFooterTemplate(ticket *model.Ticket, templatePath string) (string, error) {
+	footerTmpl, err := template.ParseFiles(templatePath)
+	if err != nil {
+		return "", err
+	}
+
+	var footerBytes bytes.Buffer
+	if err := footerTmpl.Execute(&footerBytes, ticket); err != nil {
+		return "", err
+	}
+	return footerBytes.String(), nil
+}
+
 func (c *GithubClient) PublishTicket(ticket *model.Ticket, cmp *model.Campaign, dryRun bool) (*github.Issue, error) {
 	mdDescription := j2m.JiraToMD(ticket.Description)
+	if cmp.FooterTemplate != "" {
+		footer, err := getFooterTemplate(ticket, cmp.FooterTemplate)
+		if err != nil {
+			return nil, err
+		}
+
+		mdDescription += "\n" + footer
+	}
+
 	issueRequest := &github.IssueRequest{
 		Title:  &ticket.Summary,
 		Body:   &mdDescription,
