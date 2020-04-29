@@ -1,4 +1,4 @@
-package github
+package app
 
 import (
 	"bytes"
@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"text/template"
 
-	"git.ctrlz.es/mgdelacroix/campaigner/campaign"
 	"git.ctrlz.es/mgdelacroix/campaigner/model"
 
 	"github.com/StevenACoffman/j2m"
@@ -15,21 +14,13 @@ import (
 	"golang.org/x/oauth2"
 )
 
-type GithubClient struct {
-	*github.Client
-	Repo string
-}
-
-func NewClient(repo, token string) *GithubClient {
+func (a *App) InitGithubClient() error {
 	ctx := context.Background()
-	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token})
+	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: a.Campaign.Github.Token})
 	tc := oauth2.NewClient(ctx, ts)
 
-	client := github.NewClient(tc)
-	return &GithubClient{
-		Client: client,
-		Repo:   repo,
-	}
+	a.githubClient = github.NewClient(tc)
+	return nil
 }
 
 func getFooterTemplate(ticket *model.Ticket, templatePath string) (string, error) {
@@ -45,10 +36,10 @@ func getFooterTemplate(ticket *model.Ticket, templatePath string) (string, error
 	return footerBytes.String(), nil
 }
 
-func (c *GithubClient) PublishTicket(ticket *model.Ticket, cmp *model.Campaign, dryRun bool) (*github.Issue, error) {
+func (a *App) PublishInGithub(ticket *model.Ticket, dryRun bool) (*github.Issue, error) {
 	mdDescription := j2m.JiraToMD(ticket.Description)
-	if cmp.FooterTemplate != "" {
-		footer, err := getFooterTemplate(ticket, cmp.FooterTemplate)
+	if a.Campaign.FooterTemplate != "" {
+		footer, err := getFooterTemplate(ticket, a.Campaign.FooterTemplate)
 		if err != nil {
 			return nil, err
 		}
@@ -59,7 +50,7 @@ func (c *GithubClient) PublishTicket(ticket *model.Ticket, cmp *model.Campaign, 
 	issueRequest := &github.IssueRequest{
 		Title:  &ticket.Summary,
 		Body:   &mdDescription,
-		Labels: &cmp.Github.Labels,
+		Labels: &a.Campaign.Github.Labels,
 	}
 
 	if dryRun {
@@ -71,21 +62,21 @@ func (c *GithubClient) PublishTicket(ticket *model.Ticket, cmp *model.Campaign, 
 		}, nil
 	}
 
-	owner, repo := cmp.RepoComponents()
-	newIssue, _, err := c.Issues.Create(context.Background(), owner, repo, issueRequest)
+	owner, repo := a.Campaign.RepoComponents()
+	newIssue, _, err := a.githubClient.Issues.Create(context.Background(), owner, repo, issueRequest)
 	if err != nil {
 		return nil, err
 	}
 	return newIssue, nil
 }
 
-func (c *GithubClient) PublishNextTicket(cmp *model.Campaign, dryRun bool) (bool, error) {
-	ticket := cmp.NextGithubUnpublishedTicket()
+func (a *App) PublishNextInGithub(dryRun bool) (bool, error) {
+	ticket := a.Campaign.NextGithubUnpublishedTicket()
 	if ticket == nil {
 		return false, nil
 	}
 
-	issue, err := c.PublishTicket(ticket, cmp, dryRun)
+	issue, err := a.PublishInGithub(ticket, dryRun)
 	if err != nil {
 		return false, err
 	}
@@ -99,16 +90,16 @@ func (c *GithubClient) PublishNextTicket(cmp *model.Campaign, dryRun bool) (bool
 		ticket.GithubAssignee = user.GetLogin()
 	}
 	ticket.GithubStatus = issue.GetState()
-	if err := campaign.Save(cmp); err != nil {
+	if err := a.Save(); err != nil {
 		return false, err
 	}
 	return true, nil
 }
 
-func (c *GithubClient) PublishAll(cmp *model.Campaign, dryRun bool) (int, error) {
+func (a *App) PublishAllInGithub(dryRun bool) (int, error) {
 	count := 0
 	for {
-		next, err := c.PublishNextTicket(cmp, dryRun)
+		next, err := a.PublishNextInGithub(dryRun)
 		if err != nil {
 			return count, err
 		}
@@ -120,9 +111,9 @@ func (c *GithubClient) PublishAll(cmp *model.Campaign, dryRun bool) (int, error)
 	return count, nil
 }
 
-func (c *GithubClient) PublishBatch(cmp *model.Campaign, batch int, dryRun bool) error {
+func (a *App) PublishBatchInGithub(batch int, dryRun bool) error {
 	for i := 1; i <= batch; i++ {
-		next, err := c.PublishNextTicket(cmp, dryRun)
+		next, err := a.PublishNextInGithub(dryRun)
 		if err != nil {
 			return err
 		}

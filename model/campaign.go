@@ -70,6 +70,31 @@ func (c *Campaign) PrintStatus() {
 	fmt.Printf("\t%d/%d\tpublished in Github\n\n", totalPublishedGithub, totalPublishedJira)
 }
 
+func (c *Campaign) AddTickets(tickets []*Ticket, fileOnly bool) {
+	c.Tickets = append(c.Tickets, tickets...)
+	c.RemoveDuplicateTickets(fileOnly)
+}
+
+func (c *Campaign) RemoveDuplicateTickets(fileOnly bool) {
+	ticketMap := map[string]*Ticket{}
+	for _, t := range c.Tickets {
+		filename, _ := t.Data["filename"].(string)
+		lineNo, _ := t.Data["lineNo"].(int)
+		if fileOnly {
+			ticketMap[filename] = t
+		} else {
+			ticketMap[fmt.Sprintf("%s:%d", filename, lineNo)] = t
+		}
+	}
+
+	cleanTickets := []*Ticket{}
+	for _, t := range ticketMap {
+		cleanTickets = append(cleanTickets, t)
+	}
+
+	c.Tickets = cleanTickets
+}
+
 func (c *Campaign) FillTicket(t *Ticket) error {
 	summaryTmpl, err := template.New("").Parse(c.Summary)
 	if err != nil {

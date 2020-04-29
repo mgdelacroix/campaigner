@@ -8,7 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"git.ctrlz.es/mgdelacroix/campaigner/campaign"
+	"git.ctrlz.es/mgdelacroix/campaigner/app"
 	"git.ctrlz.es/mgdelacroix/campaigner/model"
 	"git.ctrlz.es/mgdelacroix/campaigner/parsers"
 )
@@ -25,7 +25,7 @@ func GrepAddCmd() *cobra.Command {
 `,
 		Example: `  grep -nriIF --include \*.go cobra.Command | campaigner add grep`,
 		Args:    cobra.NoArgs,
-		Run:     grepAddCmdF,
+		Run:     withApp(grepAddCmdF),
 	}
 
 	cmd.Flags().BoolP("file-only", "f", false, "Generates one ticket per file instead of per match")
@@ -60,7 +60,7 @@ func GovetAddCmd() *cobra.Command {
 `,
 		Example: `  govet ./... 2>&1 | campaigner add govet`,
 		Args:    cobra.NoArgs,
-		Run:     govetAddCmdF,
+		Run:     withApp(govetAddCmdF),
 	}
 
 	cmd.Flags().BoolP("file-only", "f", false, "Generates one ticket per file instead of per match")
@@ -74,7 +74,7 @@ func CsvAddCmd() *cobra.Command {
 		Short:   "Generates the tickets reading a csv file",
 		Example: `  campaigner add csv tickets.csv`,
 		Args:    cobra.ExactArgs(1),
-		Run:     csvAddCmdF,
+		Run:     withApp(csvAddCmdF),
 	}
 }
 
@@ -95,20 +95,13 @@ func AddCmd() *cobra.Command {
 	return cmd
 }
 
-func grepAddCmdF(cmd *cobra.Command, _ []string) {
+func grepAddCmdF(a *app.App, cmd *cobra.Command, _ []string) {
 	fileOnly, _ := cmd.Flags().GetBool("file-only")
 
 	tickets := parsers.ParseWith(parsers.GREP)
+	a.Campaign.AddTickets(tickets, fileOnly)
 
-	cmp, err := campaign.Read()
-	if err != nil {
-		ErrorAndExit(cmd, err)
-	}
-
-	cmp.Tickets = append(cmp.Tickets, tickets...)
-	cmp.Tickets = model.RemoveDuplicateTickets(cmp.Tickets, fileOnly)
-
-	if err := campaign.Save(cmp); err != nil {
+	if err := a.Save(); err != nil {
 		ErrorAndExit(cmd, err)
 	}
 	cmd.Printf("%d tickets have been added\n", len(tickets))
@@ -118,32 +111,20 @@ func agAddCmdF(_ *cobra.Command, _ []string) error {
 	return fmt.Errorf("not implemented yet")
 }
 
-func govetAddCmdF(cmd *cobra.Command, _ []string) {
+func govetAddCmdF(a *app.App, cmd *cobra.Command, _ []string) {
 	fileOnly, _ := cmd.Flags().GetBool("file-only")
 
 	tickets := parsers.ParseWith(parsers.GOVET)
+	a.Campaign.AddTickets(tickets, fileOnly)
 
-	cmp, err := campaign.Read()
-	if err != nil {
-		ErrorAndExit(cmd, err)
-	}
-
-	cmp.Tickets = append(cmp.Tickets, tickets...)
-	cmp.Tickets = model.RemoveDuplicateTickets(cmp.Tickets, fileOnly)
-
-	if err := campaign.Save(cmp); err != nil {
+	if err := a.Save(); err != nil {
 		ErrorAndExit(cmd, err)
 	}
 	cmd.Printf("%d tickets have been added\n", len(tickets))
 }
 
-func csvAddCmdF(cmd *cobra.Command, args []string) {
+func csvAddCmdF(a *app.App, cmd *cobra.Command, args []string) {
 	file, err := os.Open(args[0])
-	if err != nil {
-		ErrorAndExit(cmd, err)
-	}
-
-	cmp, err := campaign.Read()
 	if err != nil {
 		ErrorAndExit(cmd, err)
 	}
@@ -160,10 +141,10 @@ func csvAddCmdF(cmd *cobra.Command, args []string) {
 		for i, header := range headers {
 			data[header] = line[i]
 		}
-		cmp.Tickets = append(cmp.Tickets, &model.Ticket{Data: data})
+		a.Campaign.Tickets = append(a.Campaign.Tickets, &model.Ticket{Data: data})
 	}
 
-	if err := campaign.Save(cmp); err != nil {
+	if err := a.Save(); err != nil {
 		ErrorAndExit(cmd, err)
 	}
 	cmd.Printf("%d tickets have been added\n", len(records[1:]))

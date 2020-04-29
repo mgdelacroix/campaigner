@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"git.ctrlz.es/mgdelacroix/campaigner/campaign"
+	"git.ctrlz.es/mgdelacroix/campaigner/app"
 	"git.ctrlz.es/mgdelacroix/campaigner/model"
 
 	"github.com/spf13/cobra"
@@ -78,7 +78,7 @@ func initCmdF(cmd *cobra.Command, _ []string) {
 
 	project := strings.Split(epic, "-")[0]
 
-	cmp := &model.Campaign{
+	campaign := &model.Campaign{
 		Jira: model.ConfigJira{
 			Url:       url,
 			Username:  jiraUsername,
@@ -96,7 +96,7 @@ func initCmdF(cmd *cobra.Command, _ []string) {
 		IssueTemplate:  issueTemplate,
 		FooterTemplate: footerTemplate,
 	}
-	if err := campaign.Save(cmp); err != nil {
+	if err := app.SaveCampaign(campaign, "./campaign.json"); err != nil {
 		ErrorAndExit(cmd, err)
 	}
 }

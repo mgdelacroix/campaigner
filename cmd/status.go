@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"git.ctrlz.es/mgdelacroix/campaigner/campaign"
-
 	"github.com/spf13/cobra"
+
+	"git.ctrlz.es/mgdelacroix/campaigner/app"
 )
 
 func StatusCmd() *cobra.Command {
@@ -12,15 +12,10 @@ func StatusCmd() *cobra.Command {
 		Short: "Prints the campaign status",
 		Long:  "Prints the current status of the campaign and its tickets",
 		Args:  cobra.NoArgs,
-		Run:   statusCmdF,
+		Run:   withApp(statusCmdF),
 	}
 }
 
-func statusCmdF(cmd *cobra.Command, _ []string) {
-	cmp, err := campaign.Read()
-	if err != nil {
-		ErrorAndExit(cmd, err)
-	}
-
-	cmp.PrintStatus()
+func statusCmdF(a *app.App, cmd *cobra.Command, _ []string) {
+	a.Campaign.PrintStatus()
 }

@@ -1,4 +1,4 @@
-package jira
+package app
 
 import (
 	"bytes"
@@ -6,32 +6,28 @@ import (
 	"fmt"
 	"text/template"
 
-	"git.ctrlz.es/mgdelacroix/campaigner/campaign"
 	"git.ctrlz.es/mgdelacroix/campaigner/model"
 
 	jira "gopkg.in/andygrunwald/go-jira.v1"
 )
 
-type JiraClient struct {
-	*jira.Client
-}
-
-func NewClient(url, username, token string) (*JiraClient, error) {
+func (a *App) InitJiraClient() error {
 	tp := jira.BasicAuthTransport{
-		Username: username,
-		Password: token,
+		Username: a.Campaign.Jira.Username,
+		Password: a.Campaign.Jira.Token,
 	}
 
-	client, err := jira.NewClient(tp.Client(), url)
+	client, err := jira.NewClient(tp.Client(), a.Campaign.Jira.Url)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &JiraClient{client}, nil
+	a.jiraClient = client
+	return nil
 }
 
-func (c *JiraClient) GetIssueFromTicket(ticket *model.Ticket, cmp *model.Campaign) (*jira.Issue, error) {
-	summaryTmpl, err := template.New("").Parse(cmp.Summary)
+func (a *App) GetJiraIssueFromTicket(ticket *model.Ticket) (*jira.Issue, error) {
+	summaryTmpl, err := template.New("").Parse(a.Campaign.Summary)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +38,7 @@ func (c *JiraClient) GetIssueFromTicket(ticket *model.Ticket, cmp *model.Campaig
 	}
 	summary := summaryBytes.String()
 
-	descriptionTemplate, err := template.ParseFiles(cmp.IssueTemplate)
+	descriptionTemplate, err := template.ParseFiles(a.Campaign.IssueTemplate)
 	if err != nil {
 		return nil, err
 	}
@@ -56,22 +52,22 @@ func (c *JiraClient) GetIssueFromTicket(ticket *model.Ticket, cmp *model.Campaig
 	data := map[string]string{
 		"Description": description,
 		"Summary":     summary,
-		"Project":     cmp.Jira.Project,
-		"Issue Type":  cmp.Jira.IssueType,
-		"Epic Link":   cmp.Jira.Epic,
+		"Project":     a.Campaign.Jira.Project,
+		"Issue Type":  a.Campaign.Jira.IssueType,
+		"Epic Link":   a.Campaign.Jira.Epic,
 	}
 
-	createMetaInfo, _, err := c.Issue.GetCreateMeta(cmp.Jira.Project)
+	createMetaInfo, _, err := a.jiraClient.Issue.GetCreateMeta(a.Campaign.Jira.Project)
 	if err != nil {
 		return nil, err
 	}
 
-	project := createMetaInfo.GetProjectWithKey(cmp.Jira.Project)
+	project := createMetaInfo.GetProjectWithKey(a.Campaign.Jira.Project)
 	if project == nil {
-		return nil, fmt.Errorf("Error retrieving project with key %s", cmp.Jira.Project)
+		return nil, fmt.Errorf("Error retrieving project with key %s", a.Campaign.Jira.Project)
 	}
 
-	issueType := project.GetIssueTypeWithName(cmp.Jira.IssueType)
+	issueType := project.GetIssueTypeWithName(a.Campaign.Jira.IssueType)
 	if issueType == nil {
 		return nil, fmt.Errorf("Error retrieving issue type with name Story")
 	}
@@ -84,8 +80,8 @@ func (c *JiraClient) GetIssueFromTicket(ticket *model.Ticket, cmp *model.Campaig
 	return issue, nil
 }
 
-func (c *JiraClient) PublishTicket(ticket *model.Ticket, cmp *model.Campaign, dryRun bool) (*jira.Issue, error) {
-	issue, err := c.GetIssueFromTicket(ticket, cmp)
+func (a *App) PublishInJira(ticket *model.Ticket, dryRun bool) (*jira.Issue, error) {
+	issue, err := a.GetJiraIssueFromTicket(ticket)
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +92,7 @@ func (c *JiraClient) PublishTicket(ticket *model.Ticket, cmp *model.Campaign, dr
 		return issue, nil
 	}
 
-	newIssue, _, err := c.Issue.Create(issue)
+	newIssue, _, err := a.jiraClient.Issue.Create(issue)
 	if err != nil {
 		return nil, err
 	}
@@ -104,21 +100,21 @@ func (c *JiraClient) PublishTicket(ticket *model.Ticket, cmp *model.Campaign, dr
 	return newIssue, nil
 }
 
-func (c *JiraClient) GetIssue(issueNo string) (*jira.Issue, error) {
-	issue, _, err := c.Issue.Get(issueNo, nil)
+func (a *App) GetIssue(issueNo string) (*jira.Issue, error) {
+	issue, _, err := a.jiraClient.Issue.Get(issueNo, nil)
 	if err != nil {
 		return nil, err
 	}
 	return issue, nil
 }
 
-func (c *JiraClient) PublishNextTicket(cmp *model.Campaign, dryRun bool) (bool, error) {
-	ticket := cmp.NextJiraUnpublishedTicket()
+func (a *App) PublishNextInJira(dryRun bool) (bool, error) {
+	ticket := a.Campaign.NextJiraUnpublishedTicket()
 	if ticket == nil {
 		return false, nil
 	}
 
-	issue, err := c.PublishTicket(ticket, cmp, dryRun)
+	issue, err := a.PublishInJira(ticket, dryRun)
 	if err != nil {
 		return false, err
 	}
@@ -127,25 +123,25 @@ func (c *JiraClient) PublishNextTicket(cmp *model.Campaign, dryRun bool) (bool, 
 		return true, nil
 	}
 
-	issue, _, err = c.Issue.Get(issue.Key, nil)
+	issue, _, err = a.jiraClient.Issue.Get(issue.Key, nil)
 	if err != nil {
 		return false, err
 	}
 
-	ticket.JiraLink = fmt.Sprintf("%s/browse/%s", cmp.Jira.Url, issue.Key)
+	ticket.JiraLink = fmt.Sprintf("%s/browse/%s", a.Campaign.Jira.Url, issue.Key)
 	ticket.Summary = issue.Fields.Summary
 	ticket.Description = issue.Fields.Description
 	ticket.JiraStatus = issue.Fields.Status.Name
-	if err := campaign.Save(cmp); err != nil {
+	if err := a.Save(); err != nil {
 		return false, err
 	}
 	return true, nil
 }
 
-func (c *JiraClient) PublishAll(cmp *model.Campaign, dryRun bool) (int, error) {
+func (a *App) PublishAllInJira(dryRun bool) (int, error) {
 	count := 0
 	for {
-		next, err := c.PublishNextTicket(cmp, dryRun)
+		next, err := a.PublishNextInJira(dryRun)
 		if err != nil {
 			return count, err
 		}
@@ -157,9 +153,9 @@ func (c *JiraClient) PublishAll(cmp *model.Campaign, dryRun bool) (int, error) {
 	return count, nil
 }
 
-func (c *JiraClient) PublishBatch(cmp *model.Campaign, batch int, dryRun bool) error {
+func (a *App) PublishBatchInJira(batch int, dryRun bool) error {
 	for i := 1; i <= batch; i++ {
-		next, err := c.PublishNextTicket(cmp, dryRun)
+		next, err := a.PublishNextInJira(dryRun)
 		if err != nil {
 			return err
 		}
