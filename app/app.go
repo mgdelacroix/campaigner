@@ -71,5 +71,8 @@ func NewApp(path string) (*App, error) {
 	if err := app.Load(); err != nil {
 		return nil, err
 	}
+	if err := app.InitClients(); err != nil {
+		return nil, err
+	}
 	return app, nil
 }
