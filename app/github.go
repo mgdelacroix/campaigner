@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"text/template"
 
 	"git.ctrlz.es/mgdelacroix/campaigner/model"
@@ -19,7 +20,7 @@ func (a *App) InitGithubClient() error {
 	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: a.Campaign.Github.Token})
 	tc := oauth2.NewClient(ctx, ts)
 
-	a.githubClient = github.NewClient(tc)
+	a.GithubClient = github.NewClient(tc)
 	return nil
 }
 
@@ -63,7 +64,7 @@ func (a *App) PublishInGithub(ticket *model.Ticket, dryRun bool) (*github.Issue,
 	}
 
 	owner, repo := a.Campaign.RepoComponents()
-	newIssue, _, err := a.githubClient.Issues.Create(context.Background(), owner, repo, issueRequest)
+	newIssue, _, err := a.GithubClient.Issues.Create(context.Background(), owner, repo, issueRequest)
 	if err != nil {
 		return nil, err
 	}
@@ -93,6 +94,13 @@ func (a *App) PublishNextInGithub(dryRun bool) (bool, error) {
 	if err := a.Save(); err != nil {
 		return false, err
 	}
+
+	if !dryRun {
+		if err := a.UpdateJiraAfterGithub(ticket); err != nil {
+			fmt.Fprintf(os.Stderr, "error updating Jira info for %s after publishing in Github\n", ticket.JiraLink)
+		}
+	}
+
 	return true, nil
 }
 

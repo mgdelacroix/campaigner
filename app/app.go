@@ -15,8 +15,8 @@ import (
 type App struct {
 	Path string
 
-	jiraClient   *jira.Client
-	githubClient *github.Client
+	JiraClient   *jira.Client
+	GithubClient *github.Client
 	Campaign     *model.Campaign
 }
 

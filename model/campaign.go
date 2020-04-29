@@ -127,3 +127,11 @@ func (c *Campaign) RepoComponents() (string, string) {
 	}
 	return "", ""
 }
+
+func (c *Campaign) GetJiraUrl(ticket *Ticket) string {
+	return fmt.Sprintf("%s/browse/%s", c.Jira.Url, ticket.JiraLink)
+}
+
+func (c *Campaign) GetGithubUrl(ticket *Ticket) string {
+	return fmt.Sprintf("https://github.com/%s/issues/%d", c.Github.Repo, ticket.GithubLink)
+}

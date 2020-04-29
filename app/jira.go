@@ -11,6 +11,8 @@ import (
 	jira "gopkg.in/andygrunwald/go-jira.v1"
 )
 
+const GithubIssueJiraField = "customfield_11106"
+
 func (a *App) InitJiraClient() error {
 	tp := jira.BasicAuthTransport{
 		Username: a.Campaign.Jira.Username,
@@ -22,8 +24,24 @@ func (a *App) InitJiraClient() error {
 		return err
 	}
 
-	a.jiraClient = client
+	a.JiraClient = client
 	return nil
+}
+
+func (a *App) UpdateJiraAfterGithub(ticket *model.Ticket) error {
+	data := map[string]interface{}{
+		"fields": map[string]interface{}{
+			GithubIssueJiraField: a.Campaign.GetGithubUrl(ticket),
+			"fixVersions": []map[string]interface{}{
+				{
+					"name": "Help Wanted",
+				},
+			},
+		},
+	}
+
+	_, err := a.JiraClient.Issue.UpdateIssue(ticket.JiraLink, data)
+	return err
 }
 
 func (a *App) GetJiraIssueFromTicket(ticket *model.Ticket) (*jira.Issue, error) {
@@ -57,7 +75,7 @@ func (a *App) GetJiraIssueFromTicket(ticket *model.Ticket) (*jira.Issue, error) 
 		"Epic Link":   a.Campaign.Jira.Epic,
 	}
 
-	createMetaInfo, _, err := a.jiraClient.Issue.GetCreateMeta(a.Campaign.Jira.Project)
+	createMetaInfo, _, err := a.JiraClient.Issue.GetCreateMeta(a.Campaign.Jira.Project)
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +110,7 @@ func (a *App) PublishInJira(ticket *model.Ticket, dryRun bool) (*jira.Issue, err
 		return issue, nil
 	}
 
-	newIssue, _, err := a.jiraClient.Issue.Create(issue)
+	newIssue, _, err := a.JiraClient.Issue.Create(issue)
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +119,7 @@ func (a *App) PublishInJira(ticket *model.Ticket, dryRun bool) (*jira.Issue, err
 }
 
 func (a *App) GetIssue(issueNo string) (*jira.Issue, error) {
-	issue, _, err := a.jiraClient.Issue.Get(issueNo, nil)
+	issue, _, err := a.JiraClient.Issue.Get(issueNo, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -123,12 +141,12 @@ func (a *App) PublishNextInJira(dryRun bool) (bool, error) {
 		return true, nil
 	}
 
-	issue, _, err = a.jiraClient.Issue.Get(issue.Key, nil)
+	issue, _, err = a.JiraClient.Issue.Get(issue.Key, nil)
 	if err != nil {
 		return false, err
 	}
 
-	ticket.JiraLink = fmt.Sprintf("%s/browse/%s", a.Campaign.Jira.Url, issue.Key)
+	ticket.JiraLink = issue.Key
 	ticket.Summary = issue.Fields.Summary
 	ticket.Description = issue.Fields.Description
 	ticket.JiraStatus = issue.Fields.Status.Name
