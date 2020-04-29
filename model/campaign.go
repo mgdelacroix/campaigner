@@ -102,3 +102,13 @@ func (c *Campaign) RepoComponents() (string, string) {
 	}
 	return "", ""
 }
+
+func (c *Campaign) GetByJiraIssue(num string) (ticket *Ticket) {
+	for _, t := range c.Tickets {
+		if t.JiraIssue() == num {
+			ticket = t
+			return
+		}
+	}
+	return
+}

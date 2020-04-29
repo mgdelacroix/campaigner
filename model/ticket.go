@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"strings"
 )
 
 type Ticket struct {
@@ -47,4 +48,12 @@ func (t *Ticket) PrintStatus() {
 	if t.Summary != "" {
 		fmt.Printf("[%s] %s\n", t.JiraLink, t.Summary)
 	}
+}
+
+func (t *Ticket) JiraIssue() string {
+	parts := strings.Split(t.JiraLink, "/")
+	if len(parts) < 2 {
+		return ""
+	}
+	return parts[len(parts)-1]
 }
