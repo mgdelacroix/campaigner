@@ -87,9 +87,6 @@ func (a *App) PublishNextInGithub(dryRun bool) (bool, error) {
 	}
 
 	ticket.GithubLink = issue.GetNumber()
-	if user := issue.GetUser(); user != nil {
-		ticket.GithubAssignee = user.GetLogin()
-	}
 	ticket.GithubStatus = issue.GetState()
 	if err := a.Save(); err != nil {
 		return false, err

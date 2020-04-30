@@ -45,6 +45,7 @@ func RootCmd() *cobra.Command {
 		InitCmd(),
 		StatusCmd(),
 		PublishCmd(),
+		PullCmd(),
 		SyncCmd(),
 	)
 

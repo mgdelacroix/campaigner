@@ -76,10 +76,17 @@ func (c *Campaign) AddTickets(tickets []*Ticket, fileOnly bool) {
 }
 
 func (c *Campaign) RemoveDuplicateTickets(fileOnly bool) {
+	datalessTickets := []*Ticket{}
 	ticketMap := map[string]*Ticket{}
 	for _, t := range c.Tickets {
 		filename, _ := t.Data["filename"].(string)
 		lineNo, _ := t.Data["lineNo"].(int)
+
+		if filename == "" {
+			datalessTickets = append(datalessTickets, t)
+			continue
+		}
+
 		if fileOnly {
 			ticketMap[filename] = t
 		} else {
@@ -88,6 +95,9 @@ func (c *Campaign) RemoveDuplicateTickets(fileOnly bool) {
 	}
 
 	cleanTickets := []*Ticket{}
+	// dataless tickets are added first as they come from already
+	// existing tickets in Jira
+	cleanTickets = append(cleanTickets, datalessTickets...)
 	for _, t := range ticketMap {
 		cleanTickets = append(cleanTickets, t)
 	}

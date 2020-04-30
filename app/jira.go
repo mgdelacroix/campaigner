@@ -183,3 +183,37 @@ func (a *App) PublishBatchInJira(batch int, dryRun bool) error {
 	}
 	return nil
 }
+
+func (a *App) GetTicketsFromJiraEpic() ([]*model.Ticket, error) {
+	jql := fmt.Sprintf("project = %s AND type = %s AND \"Epic Link\" = %s", a.Campaign.Jira.Project, a.Campaign.Jira.IssueType, a.Campaign.Jira.Epic)
+
+	page := 0
+	maxPerPage := 50
+	issues := []jira.Issue{}
+	for {
+		opts := &jira.SearchOptions{StartAt: maxPerPage * page, MaxResults: maxPerPage}
+		pageIssues, _, err := a.JiraClient.Issue.Search(jql, opts)
+		if err != nil {
+			return nil, err
+		}
+
+		issues = append(issues, pageIssues...)
+		if len(pageIssues) < maxPerPage {
+			break
+		}
+		page++
+	}
+
+	tickets := []*model.Ticket{}
+	for _, issue := range issues {
+		// ToDo: if they have github link, fill and fetch github data
+		ticket := &model.Ticket{
+			JiraLink:    issue.Key,
+			JiraStatus:  issue.Fields.Status.Name,
+			Summary:     issue.Fields.Summary,
+			Description: issue.Fields.Description,
+		}
+		tickets = append(tickets, ticket)
+	}
+	return tickets, nil
+}
