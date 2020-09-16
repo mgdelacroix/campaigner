@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -20,4 +22,6 @@ func SyncCmd() *cobra.Command {
 	return cmd
 }
 
-func syncCmdF(_ *cobra.Command, _ []string) {}
+func syncCmdF(cmd *cobra.Command, _ []string) {
+	ErrorAndExit(cmd, fmt.Errorf("Not implemented yet"))
+}
