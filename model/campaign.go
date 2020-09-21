@@ -105,6 +105,16 @@ func (c *Campaign) RemoveDuplicateTickets(fileOnly bool) {
 	c.Tickets = cleanTickets
 }
 
+func (c *Campaign) GetPublishedGithubTickets() []*Ticket {
+	publishedTickets := []*Ticket{}
+	for _, ticket := range c.Tickets {
+		if ticket.IsPublishedGithub() {
+			publishedTickets = append(publishedTickets, ticket)
+		}
+	}
+	return publishedTickets
+}
+
 func (c *Campaign) FillTicket(t *Ticket) error {
 	summaryTmpl, err := template.New("").Parse(c.Summary)
 	if err != nil {

@@ -1,27 +1,24 @@
 package cmd
 
 import (
-	"fmt"
+	"git.ctrlz.es/mgdelacroix/campaigner/app"
 
 	"github.com/spf13/cobra"
 )
 
 func SyncCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	return &cobra.Command{
 		Use:   "sync",
 		Short: "Syncs the tickets",
 		Long:  "Synchronizes the status of the published tickets with remote providers",
 		Args:  cobra.NoArgs,
-		Run:   syncCmdF,
+		Run:   withApp(syncCmdF),
 	}
-
-	cmd.Flags().BoolP("all", "a", false, "syncs all the published tickets")
-	cmd.Flags().StringP("jira-issue", "j", "", "syncs a ticket by Jira issue number")
-	cmd.Flags().StringP("github-issue", "g", "", "syncs a ticket by GitHub issue number")
-
-	return cmd
 }
 
-func syncCmdF(cmd *cobra.Command, _ []string) {
-	ErrorAndExit(cmd, fmt.Errorf("Not implemented yet"))
+func syncCmdF(a *app.App, cmd *cobra.Command, _ []string) {
+	if err := a.GithubSync(); err != nil {
+		ErrorAndExit(cmd, err)
+	}
+	cmd.Println("Synchronization completed")
 }

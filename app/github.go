@@ -128,3 +128,27 @@ func (a *App) PublishBatchInGithub(batch int, dryRun bool) error {
 	}
 	return nil
 }
+
+func (a *App) GithubSync() error {
+	tickets := a.Campaign.GetPublishedGithubTickets()
+	total := len(tickets)
+	owner, repo := a.Campaign.RepoComponents()
+
+	for i, ticket := range tickets {
+		fmt.Printf("\rUpdating ticket %d of %d", i+1, total)
+
+		issue, _, err := a.GithubClient.Issues.Get(context.Background(), owner, repo, ticket.GithubLink)
+		if err != nil {
+			return err
+		}
+
+		assignee := issue.GetAssignee()
+		if assignee != nil {
+			ticket.GithubAssignee = assignee.GetLogin()
+		}
+		ticket.GithubStatus = issue.GetState()
+	}
+	fmt.Print("\n")
+
+	return a.Save()
+}
