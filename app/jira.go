@@ -153,6 +153,9 @@ func (a *App) PublishNextInJira(dryRun bool) (bool, error) {
 	if err := a.Save(); err != nil {
 		return false, err
 	}
+
+	// ToDo: print here the newly created issue
+
 	return true, nil
 }
 

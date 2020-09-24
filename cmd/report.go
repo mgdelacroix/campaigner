@@ -22,7 +22,7 @@ func ReportCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		UserReportCmd(),
+		UsersReportCmd(),
 	)
 
 	return cmd
