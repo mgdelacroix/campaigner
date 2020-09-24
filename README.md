@@ -65,15 +65,30 @@ You can see more information on how each method works using `campaigner add --he
 Once the campaign is ready, we can see its status running `campaigner status`:
 
 ```sh
+$ campaigner status
 Current campaign for johndoe/testrepo with summary
 Remove the ToDo comment in {{.filename}}:{{.lineNo}}
 
-        351     total tickets
-        0/351   published in Jira
-        0/0     published in Github
+        351         total tickets
+          0     published in Jira
+          0   published in Github
+          0              assigned
+          0                closed
 
 ```
 
 The status shows the total of tickets that we have created, how many of those have been published in Jira and of that last amount, how many have been published in GitHub too.
 
 To publish tickets, you can use the `campaigner publish jira` and `campaigner publish github` commands, and you can publish tickets in batches or just publish all of them. When running a publish command, `campaigner` will search the first unpublished tickets and will use the provider APIs to publish them.
+
+### Syncing the campaign status
+
+If we want to check the status of our campaign as it progresses and the tickets get assigned and closed, we have first to sync our local state of the campaign with the status of the tickets we've published:
+
+```sh
+$ campaigner sync
+Updating ticket 9 of 9
+Synchronization completed
+```
+
+This will fetch the current state of the jira tickets and github issues and update our local campaign. Then we can run `campaigner status` to see the updated progress, or we can generate reports from the campaign's information with `campaigner report`.
