@@ -20,8 +20,9 @@ func (c *Campaign) PrintUserReport() {
 	}
 
 	fmt.Println("User report:\n")
-	w := tabwriter.NewWriter(os.Stdout, 3, 0, 3, ' ', tabwriter.AlignRight)
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 3, ' ', tabwriter.AlignRight)
 	fmt.Fprintln(w, "GitHub username\tTickets closed\t")
+	fmt.Fprintln(w, "---------------\t--------------\t")
 	for user, count := range userTickets {
 		fmt.Fprintf(w, "%s\t%d\t\n", user, count)
 	}

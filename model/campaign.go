@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"fmt"
 	"strings"
+	"text/tabwriter"
 	"text/template"
+	"os"
 
 	"github.com/fatih/color"
 )
@@ -71,11 +73,13 @@ func (c *Campaign) PrintStatus() {
 	}
 
 	fmt.Printf("Current campaign for %s with summary\n%s\n\n", color.GreenString(c.Github.Repo), color.CyanString(c.Summary))
-	fmt.Printf("\t%d\ttotal tickets\n", totalTickets)
-	fmt.Printf("\t%d/%d\tpublished in Jira\n", totalPublishedJira, totalTickets)
-	fmt.Printf("\t%d/%d\tpublished in Github\n", totalPublishedGithub, totalPublishedJira)
-	fmt.Printf("\t%d/%d\tassigned\n", totalAssigned, totalPublishedGithub)
-	fmt.Printf("\t%d/%d\tclosed\n\n", totalClosed, totalPublishedGithub)
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 3, ' ', tabwriter.AlignRight)
+	fmt.Fprintf(w, "      %d\ttotal tickets\t\n", totalTickets)
+	fmt.Fprintf(w, "      %d\tpublished in Jira\t\n", totalPublishedJira)
+	fmt.Fprintf(w, "      %d\tpublished in Github\t\n", totalPublishedGithub)
+	fmt.Fprintf(w, "      %d\tassigned\t\n", totalAssigned)
+	fmt.Fprintf(w, "      %d\tclosed\t\n\n", totalClosed)
+	w.Flush()
 }
 
 func (c *Campaign) AddTickets(tickets []*Ticket, fileOnly bool) {
