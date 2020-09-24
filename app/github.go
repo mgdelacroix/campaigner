@@ -11,7 +11,7 @@ import (
 	"git.ctrlz.es/mgdelacroix/campaigner/model"
 
 	"github.com/StevenACoffman/j2m"
-	"github.com/google/go-github/v29/github"
+	"github.com/google/go-github/v32/github"
 	"golang.org/x/oauth2"
 )
 
@@ -91,6 +91,8 @@ func (a *App) PublishNextInGithub(dryRun bool) (bool, error) {
 	if err := a.Save(); err != nil {
 		return false, err
 	}
+
+	// ToDo: print here the newly created issue
 
 	if !dryRun {
 		if err := a.UpdateJiraAfterGithub(ticket); err != nil {

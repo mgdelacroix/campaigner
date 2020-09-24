@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/google/go-github/v29/github"
+	"github.com/google/go-github/v32/github"
 	jira "gopkg.in/andygrunwald/go-jira.v1"
 
 	"git.ctrlz.es/mgdelacroix/campaigner/model"
