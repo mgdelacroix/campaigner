@@ -9,6 +9,10 @@ import (
 func (c *Campaign) PrintUserReport() {
 	userTickets := map[string]int{}
 	for _, ticket := range c.Tickets {
+		if !ticket.IsClosed() {
+			continue
+		}
+
 		user := ticket.GithubAssignee
 		if user != "" {
 			if count, ok := userTickets[user]; ok {
