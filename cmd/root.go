@@ -11,7 +11,9 @@ import (
 
 func withApp(f func(*app.App, *cobra.Command, []string)) func(*cobra.Command, []string) {
 	return func(cmd *cobra.Command, args []string) {
-		a, err := app.NewApp("./campaign.json")
+		campaignPath, _ := cmd.Flags().GetString("campaign")
+
+		a, err := app.NewApp(campaignPath)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "ERROR: "+err.Error())
 			os.Exit(1)
@@ -38,6 +40,8 @@ func RootCmd() *cobra.Command {
 		Use:   "campaigner",
 		Short: "Create and manage Open Source campaigns",
 	}
+
+	cmd.PersistentFlags().String("campaign", "campaign.json", "the path to the campaign file")
 
 	cmd.AddCommand(
 		AddCmd(),
