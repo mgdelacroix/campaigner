@@ -62,8 +62,9 @@ func (c *Campaign) PrintStatus() {
 				totalPublishedGithub++
 				if t.IsAssigned() {
 					totalAssigned++
-				} else if t.IsClosed() {
-					totalClosed++
+					if t.IsClosed() {
+						totalClosed++
+					}
 				}
 			}
 		}

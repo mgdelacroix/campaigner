@@ -24,11 +24,11 @@ func (t *Ticket) IsPublishedGithub() bool {
 }
 
 func (t *Ticket) IsAssigned() bool {
-	return t.IsPublishedGithub() && t.GithubAssignee != "" && t.GithubStatus == "open"
+	return t.IsPublishedGithub() && t.GithubAssignee != ""
 }
 
 func (t *Ticket) IsClosed() bool {
-	return t.IsPublishedGithub() && t.GithubAssignee != "" && t.GithubStatus == "closed"
+	return t.IsAssigned() && t.GithubStatus == "closed"
 }
 
 func (t *Ticket) PrintStatus() {
