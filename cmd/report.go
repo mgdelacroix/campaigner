@@ -8,16 +8,16 @@ import (
 
 func UsersReportCmd() *cobra.Command {
 	return &cobra.Command{
-		Use: "users",
+		Use:   "users",
 		Short: "A users report",
-		Args: cobra.NoArgs,
-		Run: withApp(userReportCmdF),
+		Args:  cobra.NoArgs,
+		Run:   withApp(userReportCmdF),
 	}
 }
 
 func ReportCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "report",
+		Use:   "report",
 		Short: "Generates reports on campaign information",
 	}
 

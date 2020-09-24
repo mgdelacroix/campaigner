@@ -3,10 +3,10 @@ package model
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"strings"
 	"text/tabwriter"
 	"text/template"
-	"os"
 
 	"github.com/fatih/color"
 )

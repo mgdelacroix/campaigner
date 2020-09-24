@@ -16,7 +16,7 @@ func (c *Campaign) PrintUserReport() {
 		user := ticket.GithubAssignee
 		if user != "" {
 			if count, ok := userTickets[user]; ok {
-				userTickets[user] = count+1
+				userTickets[user] = count + 1
 			} else {
 				userTickets[user] = 1
 			}
