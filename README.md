@@ -35,17 +35,10 @@ The template body can use as well the [JIRA text formatting notation](https://ji
 
 Lastly, before creating the campaign, we can add a template to act as a footer for the tickets when being created in GitHub. In this case, the template will receive the ticket struct, so we can use any of its properties. This footer template supports GitHub Markdown.
 
-Once we have both files, we can run `campaigner init` to create the campaign:
+Once we have both files, we can run `campaigner init` to create the campaign. The command can be run without any arguments or flags and it will request the mandatory pieces of information interactively:
 
 ```sh
-$ campaigner init --help
-Creates a new campaign in the current directory
-
-Usage:
-  campaigner init [flags]
-
-Examples:
-  campaigner init \
+$ campaigner init \
     --jira-username johndoe \
     --jira-token secret \
     --github-token TOKEN \
@@ -57,24 +50,7 @@ Examples:
     --summary 'Refactor {{.function}} to inject the configuration service' \
     --issue-template ./refactor-config.tmpl \
     --footer-template ./github-footer.tmpl
-
-
-Flags:
-  -e, --epic string              the epic id to associate this campaign with
-  -f, --footer-template string   the template path to append to the github issues as a footer
-      --github-token string      the github token
-  -h, --help                     help for init
-  -t, --issue-template string    the template path for the description of the tickets
-  -i, --issue-type string        the issue type to create the tickets as (default "Story")
-      --jira-token string        the jira token or password
-      --jira-username string     the jira username
-  -l, --label strings            the labels to add to the Github issues
-  -r, --repository string        the github repository
-  -s, --summary string           the summary of the tickets
-  -u, --url string               the jira server URL
 ```
-
-If there is any mandatory flag that we don't use, we will be asked for it interactively by the tool.
 
 The `summary` of the campaign can be a go template as well, that will receive the same properties described above for the issue template.
 
