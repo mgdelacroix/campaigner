@@ -54,12 +54,17 @@ func (c *Campaign) NextGithubUnpublishedTicket() *Ticket {
 
 func (c *Campaign) PrintStatus() {
 	totalTickets := len(c.Tickets)
-	var totalPublishedJira, totalPublishedGithub int
+	var totalPublishedJira, totalPublishedGithub, totalAssigned, totalClosed int
 	for _, t := range c.Tickets {
 		if t.IsPublishedJira() {
 			totalPublishedJira++
 			if t.IsPublishedGithub() {
 				totalPublishedGithub++
+				if t.IsAssigned() {
+					totalAssigned++
+				} else if t.IsClosed() {
+					totalClosed++
+				}
 			}
 		}
 	}
@@ -67,7 +72,9 @@ func (c *Campaign) PrintStatus() {
 	fmt.Printf("Current campaign for %s with summary\n%s\n\n", color.GreenString(c.Github.Repo), color.CyanString(c.Summary))
 	fmt.Printf("\t%d\ttotal tickets\n", totalTickets)
 	fmt.Printf("\t%d/%d\tpublished in Jira\n", totalPublishedJira, totalTickets)
-	fmt.Printf("\t%d/%d\tpublished in Github\n\n", totalPublishedGithub, totalPublishedJira)
+	fmt.Printf("\t%d/%d\tpublished in Github\n", totalPublishedGithub, totalPublishedJira)
+	fmt.Printf("\t%d/%d\tassigned\n", totalAssigned, totalPublishedGithub)
+	fmt.Printf("\t%d/%d\tclosed\n\n", totalClosed, totalPublishedGithub)
 }
 
 func (c *Campaign) AddTickets(tickets []*Ticket, fileOnly bool) {

@@ -20,7 +20,15 @@ func (t *Ticket) IsPublishedJira() bool {
 }
 
 func (t *Ticket) IsPublishedGithub() bool {
-	return t.JiraLink != "" && t.GithubLink != 0
+	return t.IsPublishedJira() && t.GithubLink != 0
+}
+
+func (t *Ticket) IsAssigned() bool {
+	return t.IsPublishedGithub() && t.GithubAssignee != "" && t.GithubStatus == "open"
+}
+
+func (t *Ticket) IsClosed() bool {
+	return t.IsPublishedGithub() && t.GithubAssignee != "" && t.GithubStatus == "closed"
 }
 
 func (t *Ticket) PrintStatus() {
