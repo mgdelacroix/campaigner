@@ -19,7 +19,7 @@ func (c *Campaign) PrintUserReport() {
 		}
 	}
 
-	fmt.Println("User report:\n")
+	fmt.Println()
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 3, ' ', tabwriter.AlignRight)
 	fmt.Fprintln(w, "GitHub username\tTickets closed\t")
 	fmt.Fprintln(w, "---------------\t--------------\t")
