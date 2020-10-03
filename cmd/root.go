@@ -47,6 +47,7 @@ func RootCmd() *cobra.Command {
 		AddCmd(),
 		// FilterCmd(),
 		InitCmd(),
+		LabelCmd(),
 		StatusCmd(),
 		PublishCmd(),
 		PullCmd(),

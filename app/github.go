@@ -154,3 +154,45 @@ func (a *App) GithubSync() error {
 
 	return a.Save()
 }
+
+func (a *App) ListLabels() ([]string, error) {
+	owner, repo := a.Campaign.RepoComponents()
+	opts := &github.ListOptions{Page: 0, PerPage: 100}
+	labels, _, err := a.GithubClient.Issues.ListLabels(context.Background(), owner, repo, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	strLabels := make([]string, len(labels))
+	for i, label := range labels {
+		strLabels[i] = *label.Name
+	}
+
+	return strLabels, nil
+}
+
+func (a *App) CheckLabels(labels []string) (bool, []string, error) {
+	ghLabels, err := a.ListLabels()
+	if err != nil {
+		return false, nil, err
+	}
+
+	badLabels := []string{}
+	for _, label := range labels {
+		exists := false
+		for _, ghLabel := range ghLabels {
+			if label == ghLabel {
+				exists = true
+			}
+		}
+
+		if !exists {
+			badLabels = append(badLabels, label)
+		}
+	}
+
+	if len(badLabels) == 0 {
+		return true, nil, nil
+	}
+	return false, badLabels, nil
+}
