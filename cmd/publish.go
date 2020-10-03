@@ -63,16 +63,16 @@ func jiraPublishCmdF(a *app.App, cmd *cobra.Command, _ []string) error {
 	}
 
 	if all {
-		count, err := a.PublishAllInJira(dryRun)
+		count, err := a.PublishAllInJira(cmd.OutOrStdout(), dryRun)
 		if err != nil {
 			ErrorAndExit(cmd, err)
 		}
-		cmd.Printf("All %d tickets successfully published in jira\n", count)
+		cmd.Printf("\nAll %d tickets successfully published in jira\n", count)
 	} else {
-		if err := a.PublishBatchInJira(batch, dryRun); err != nil {
+		if err := a.PublishBatchInJira(cmd.OutOrStdout(), batch, dryRun); err != nil {
 			ErrorAndExit(cmd, err)
 		}
-		cmd.Printf("Batch of %d tickets successfully published in jira\n", batch)
+		cmd.Printf("\nBatch of %d tickets successfully published in jira\n", batch)
 	}
 
 	return nil
@@ -88,16 +88,16 @@ func githubPublishCmdF(a *app.App, cmd *cobra.Command, _ []string) error {
 	}
 
 	if all {
-		count, err := a.PublishAllInGithub(dryRun)
+		count, err := a.PublishAllInGithub(cmd.OutOrStdout(), dryRun)
 		if err != nil {
 			ErrorAndExit(cmd, err)
 		}
-		cmd.Printf("All %d tickets successfully published in github\n", count)
+		cmd.Printf("\nAll %d tickets successfully published in github\n", count)
 	} else {
-		if err := a.PublishBatchInGithub(batch, dryRun); err != nil {
+		if err := a.PublishBatchInGithub(cmd.OutOrStdout(), batch, dryRun); err != nil {
 			ErrorAndExit(cmd, err)
 		}
-		cmd.Printf("Batch of %d tickets successfully published in github\n", batch)
+		cmd.Printf("\nBatch of %d tickets successfully published in github\n", batch)
 	}
 
 	return nil

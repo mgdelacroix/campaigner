@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
+	"strings"
 	"text/template"
 
 	"git.ctrlz.es/mgdelacroix/campaigner/model"
@@ -126,7 +128,7 @@ func (a *App) GetIssue(issueNo string) (*jira.Issue, error) {
 	return issue, nil
 }
 
-func (a *App) PublishNextInJira(dryRun bool) (bool, error) {
+func (a *App) PublishNextInJira(w io.Writer, dryRun bool) (bool, error) {
 	ticket := a.Campaign.NextJiraUnpublishedTicket()
 	if ticket == nil {
 		return false, nil
@@ -154,15 +156,15 @@ func (a *App) PublishNextInJira(dryRun bool) (bool, error) {
 		return false, err
 	}
 
-	// ToDo: print here the newly created issue
+	fmt.Fprintf(w, "Ticket published: %s/browse/%s\n", strings.TrimSuffix(a.Campaign.Jira.Url, "/"), ticket.JiraLink)
 
 	return true, nil
 }
 
-func (a *App) PublishAllInJira(dryRun bool) (int, error) {
+func (a *App) PublishAllInJira(w io.Writer, dryRun bool) (int, error) {
 	count := 0
 	for {
-		next, err := a.PublishNextInJira(dryRun)
+		next, err := a.PublishNextInJira(w, dryRun)
 		if err != nil {
 			return count, err
 		}
@@ -174,9 +176,9 @@ func (a *App) PublishAllInJira(dryRun bool) (int, error) {
 	return count, nil
 }
 
-func (a *App) PublishBatchInJira(batch int, dryRun bool) error {
+func (a *App) PublishBatchInJira(w io.Writer, batch int, dryRun bool) error {
 	for i := 1; i <= batch; i++ {
-		next, err := a.PublishNextInJira(dryRun)
+		next, err := a.PublishNextInJira(w, dryRun)
 		if err != nil {
 			return err
 		}

@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"text/template"
 
@@ -71,7 +72,7 @@ func (a *App) PublishInGithub(ticket *model.Ticket, dryRun bool) (*github.Issue,
 	return newIssue, nil
 }
 
-func (a *App) PublishNextInGithub(dryRun bool) (bool, error) {
+func (a *App) PublishNextInGithub(w io.Writer, dryRun bool) (bool, error) {
 	ticket := a.Campaign.NextGithubUnpublishedTicket()
 	if ticket == nil {
 		return false, nil
@@ -92,21 +93,19 @@ func (a *App) PublishNextInGithub(dryRun bool) (bool, error) {
 		return false, err
 	}
 
-	// ToDo: print here the newly created issue
+	fmt.Fprintf(w, "Issue published: https://github.com/%s/issues/%d\n", a.Campaign.Github.Repo, ticket.GithubLink)
 
-	if !dryRun {
-		if err := a.UpdateJiraAfterGithub(ticket); err != nil {
-			fmt.Fprintf(os.Stderr, "error updating Jira info for %s after publishing in Github\n", ticket.JiraLink)
-		}
+	if err := a.UpdateJiraAfterGithub(ticket); err != nil {
+		fmt.Fprintf(os.Stderr, "error updating Jira info for %s after publishing in Github\n", ticket.JiraLink)
 	}
 
 	return true, nil
 }
 
-func (a *App) PublishAllInGithub(dryRun bool) (int, error) {
+func (a *App) PublishAllInGithub(w io.Writer, dryRun bool) (int, error) {
 	count := 0
 	for {
-		next, err := a.PublishNextInGithub(dryRun)
+		next, err := a.PublishNextInGithub(w, dryRun)
 		if err != nil {
 			return count, err
 		}
@@ -118,9 +117,9 @@ func (a *App) PublishAllInGithub(dryRun bool) (int, error) {
 	return count, nil
 }
 
-func (a *App) PublishBatchInGithub(batch int, dryRun bool) error {
+func (a *App) PublishBatchInGithub(w io.Writer, batch int, dryRun bool) error {
 	for i := 1; i <= batch; i++ {
-		next, err := a.PublishNextInGithub(dryRun)
+		next, err := a.PublishNextInGithub(w, dryRun)
 		if err != nil {
 			return err
 		}
