@@ -55,6 +55,14 @@ $ campaigner init \
 
 The `summary` of the campaign can be a go template as well, that will receive the same properties described above for the issue template.
 
+### Modifying campaign GitHub labels
+
+`campaigner` can add labels to the GitHub tickets. Labels can be added as part of the `init` command, and can be managed with the `campaigner label` commands:
+
+ - `campaigner label list` lists the current campaign labels.
+ - `campaigner label remote` lists the labels that exist in the remote GitHub repository.
+ - `campaigner label update` opens `$EDITOR` with the campaign labels and allows you to add / remove / edit them, saving them when the editor closes. It will error if a label doesn't exist in the remote repository, but you can skip this check adding the `--skip-check` flag.
+
 ### Adding tickets to the campaign
 
 There are currently three ways to add tickets to a campaign: using `govet`, using `grep` or importing a `csv`. We can add tickets at any point during the campaign lifecycle, and we can use different methods in the same campaign, just remember that the summary and the templates will be filled with whatever properties we have in each ticket, so all of them should have at least those used in the templates.
