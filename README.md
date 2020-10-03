@@ -4,6 +4,7 @@ Command line tool to create and manage community campaigns. `campaigner` takes c
 
  - `campaigner init` generates the campaign file, linking it to the jira instance and github repository and to the epic issue that will host each campaign ticket.
  - `campaigner add` parses information from different sources and uses it to generate tickets for the campaign.
+ - `campaigner label` lists and modifies the campaign's labels for GitHub.
  - `campaigner publish` builds the tickets information and publishes it both to jira and github.
  - `campaigner sync` downloads updated information of the campaign progress.
  - `campaigner status` shows the current campaign data and progression.
