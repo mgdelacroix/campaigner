@@ -74,11 +74,11 @@ func (c *Campaign) PrintStatus() {
 
 	fmt.Printf("Current campaign for %s with summary\n%s\n\n", color.GreenString(c.Github.Repo), color.CyanString(c.Summary))
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 3, ' ', tabwriter.AlignRight)
-	fmt.Fprintf(w, "      %d\ttotal tickets\t\n", totalTickets)
-	fmt.Fprintf(w, "      %d\tpublished in Jira\t\n", totalPublishedJira)
-	fmt.Fprintf(w, "      %d\tpublished in Github\t\n", totalPublishedGithub)
-	fmt.Fprintf(w, "      %d\tassigned\t\n", totalAssigned)
-	fmt.Fprintf(w, "      %d\tclosed\t\n\n", totalClosed)
+	fmt.Fprintf(w, "      %d\t-\ttotal tickets\t\n", totalTickets)
+	fmt.Fprintf(w, "      %d\t%d%%\tpublished in Jira\t\n", totalPublishedJira, totalPublishedJira * 100 / totalTickets)
+	fmt.Fprintf(w, "      %d\t%d%%\tpublished in Github\t\n", totalPublishedGithub, totalPublishedGithub * 100 / totalTickets)
+	fmt.Fprintf(w, "      %d\t%d%%\tassigned\t\n", totalAssigned, totalAssigned * 100 / totalTickets)
+	fmt.Fprintf(w, "      %d\t%d%%\tclosed\t\n\n", totalClosed, totalClosed * 100 / totalTickets)
 	w.Flush()
 }
 
