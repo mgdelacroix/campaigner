@@ -73,6 +73,11 @@ func (c *Campaign) PrintStatus() {
 	}
 
 	fmt.Printf("Current campaign for %s with summary\n%s\n\n", color.GreenString(c.Github.Repo), color.CyanString(c.Summary))
+	if totalTickets == 0 {
+		fmt.Println("There are no tickets in the campaign. Run \"campaigner add --help\" to find out how to add them.")
+		return
+	}
+
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 3, ' ', tabwriter.AlignRight)
 	fmt.Fprintf(w, "      %d\t-\ttotal tickets\t\n", totalTickets)
 	fmt.Fprintf(w, "      %d\t%d%%\tpublished in Jira\t\n", totalPublishedJira, totalPublishedJira * 100 / totalTickets)
