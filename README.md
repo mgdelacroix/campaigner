@@ -78,11 +78,11 @@ $ campaigner status
 Current campaign for johndoe/testrepo with summary
 Remove the ToDo comment in {{.filename}}:{{.lineNo}}
 
-        351         total tickets
-          0     published in Jira
-          0   published in Github
-          0              assigned
-          0                closed
+         67     -         total tickets
+         24   35%     published in Jira
+         24   35%   published in Github
+         17   25%              assigned
+          0    0%                closed
 
 ```
 
