@@ -36,7 +36,7 @@ func RemoteLabelCmd() *cobra.Command {
 func UpdateLabelCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update",
-		Short: "Updates the campaign GitHub labels",
+		Short: "Updates the campaign's GitHub labels",
 		Args:  cobra.NoArgs,
 		Run:   withApp(updateLabelCmdF),
 	}
