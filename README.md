@@ -57,7 +57,7 @@ The `summary` of the campaign can be a go template as well, that will receive th
 
 ### Modifying campaign GitHub labels
 
-`campaigner` can add labels to the GitHub tickets. Labels can be added as part of the `init` command, and can be managed with the `campaigner label` commands:
+`campaigner` can add labels to the GitHub tickets when creating them. Labels can be added to the campaign as part of the `init` command, but they can be managed as well when the campaign is already created with the `campaigner label` commands:
 
  - `campaigner label list` lists the current campaign labels.
  - `campaigner label remote` lists the labels that exist in the remote GitHub repository.
