@@ -53,6 +53,7 @@ func RootCmd() *cobra.Command {
 		PullCmd(),
 		SyncCmd(),
 		ReportCmd(),
+		CompletionCmd(),
 	)
 
 	return cmd
