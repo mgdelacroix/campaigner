@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -48,13 +47,13 @@ To configure your zsh shell to load completions for each session, add the above 
 }
 
 func bashCompletionCmdF(cmd *cobra.Command, args []string) {
-	if err := cmd.Root().GenBashCompletion(os.Stdout); err != nil {
+	if err := cmd.Root().GenBashCompletion(cmd.OutOrStdout()); err != nil {
 		ErrorAndExit(cmd, fmt.Errorf("unable to generate completions: %w", err))
 	}
 }
 
 func zshCompletionCmdF(cmd *cobra.Command, args []string) {
-	if err := cmd.Root().GenZshCompletion(os.Stdout); err != nil {
+	if err := cmd.Root().GenZshCompletion(cmd.OutOrStdout()); err != nil {
 		ErrorAndExit(cmd, fmt.Errorf("unable to generate completions: %w", err))
 	}
 }
