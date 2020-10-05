@@ -47,27 +47,14 @@ To configure your zsh shell to load completions for each session, add the above 
 	}
 }
 
-func getRoot(cmd *cobra.Command) *cobra.Command {
-	root := cmd
-	for {
-		if !root.HasParent() {
-			break
-		}
-		root = root.Parent()
-	}
-	return root
-}
-
 func bashCompletionCmdF(cmd *cobra.Command, args []string) {
-	root := getRoot(cmd)
-	if err := root.GenBashCompletion(os.Stdout); err != nil {
+	if err := cmd.Root().GenBashCompletion(os.Stdout); err != nil {
 		ErrorAndExit(cmd, fmt.Errorf("unable to generate completions: %w", err))
 	}
 }
 
 func zshCompletionCmdF(cmd *cobra.Command, args []string) {
-	root := getRoot(cmd)
-	if err := root.GenZshCompletion(os.Stdout); err != nil {
+	if err := cmd.Root().GenZshCompletion(os.Stdout); err != nil {
 		ErrorAndExit(cmd, fmt.Errorf("unable to generate completions: %w", err))
 	}
 }
