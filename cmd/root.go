@@ -25,7 +25,9 @@ func withApp(f func(*app.App, *cobra.Command, []string)) func(*cobra.Command, []
 
 func withAppE(f func(*app.App, *cobra.Command, []string) error) func(*cobra.Command, []string) error {
 	return func(cmd *cobra.Command, args []string) error {
-		a, err := app.NewApp("./campaign.json")
+		campaignPath, _ := cmd.Flags().GetString("campaign")
+
+		a, err := app.NewApp(campaignPath)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "ERROR: "+err.Error())
 			os.Exit(1)

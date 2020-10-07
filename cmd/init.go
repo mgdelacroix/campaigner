@@ -50,6 +50,15 @@ func InitCmd() *cobra.Command {
 }
 
 func initCmdF(cmd *cobra.Command, _ []string) {
+	campaignPath, _ := cmd.Flags().GetString("campaign")
+
+	_, err := os.Stat(campaignPath)
+	if err == nil {
+		ErrorAndExit(cmd, fmt.Errorf("cannot use %s as campaign file: file already exists", campaignPath))
+	} else if !os.IsNotExist(err) {
+		ErrorAndExit(cmd, fmt.Errorf("cannot use %s as campaign file: %w", campaignPath, err))
+	}
+
 	getStringFlagOrAskIfEmpty := func(name string, question string) string {
 		val, _ := cmd.Flags().GetString(name)
 		if val == "" {
@@ -96,7 +105,7 @@ func initCmdF(cmd *cobra.Command, _ []string) {
 		IssueTemplate:  issueTemplate,
 		FooterTemplate: footerTemplate,
 	}
-	if err := app.SaveCampaign(campaign, "./campaign.json"); err != nil {
+	if err := app.SaveCampaign(campaign, campaignPath); err != nil {
 		ErrorAndExit(cmd, err)
 	}
 }
