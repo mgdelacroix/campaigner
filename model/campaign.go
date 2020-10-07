@@ -88,7 +88,7 @@ func (c *Campaign) PrintStatus() {
 	w.Flush()
 }
 
-func (c *Campaign) PrintList() {
+func (c *Campaign) PrintList(publishedOnly bool) {
 	for _, t := range c.Tickets {
 		if t.IsPublishedJira() {
 			var str string
@@ -101,7 +101,7 @@ func (c *Campaign) PrintList() {
 				str += fmt.Sprintf(" (%s)", color.MagentaString(t.GithubStatus))
 			}
 			fmt.Println(str)
-		} else {
+		} else if !publishedOnly {
 			b, _ := json.Marshal(t)
 			fmt.Printf("unpublished: %s\n", color.YellowString(string(b)))
 		}
