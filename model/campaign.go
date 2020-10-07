@@ -98,10 +98,10 @@ func (c *Campaign) PrintList(publishedOnly bool) {
 				str = fmt.Sprintf("[%s] %s", color.BlueString(t.JiraLink), t.Summary)
 			}
 			if t.GithubStatus != "" {
-				if t.GithubStatus == "open" {
-					str += fmt.Sprintf(" (%s)", color.GreenString(t.GithubStatus))
-				} else {
+				if t.IsClosed() {
 					str += fmt.Sprintf(" (%s)", color.MagentaString(t.GithubStatus))
+				} else {
+					str += fmt.Sprintf(" (%s)", color.GreenString(t.GithubStatus))
 				}
 			}
 			fmt.Println(str)
