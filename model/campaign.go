@@ -2,6 +2,7 @@ package model
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -85,6 +86,26 @@ func (c *Campaign) PrintStatus() {
 	fmt.Fprintf(w, "      %d\t%d%%\tassigned\t\n", totalAssigned, totalAssigned*100/totalTickets)
 	fmt.Fprintf(w, "      %d\t%d%%\tclosed\t\n\n", totalClosed, totalClosed*100/totalTickets)
 	w.Flush()
+}
+
+func (c *Campaign) PrintList() {
+	for _, t := range c.Tickets {
+		if t.IsPublishedJira() {
+			var str string
+			if t.IsPublishedGithub() {
+				str = fmt.Sprintf("[%s / #%d] %s", t.JiraLink, t.GithubLink, t.Summary)
+			} else {
+				str = fmt.Sprintf("[%s] %s", t.JiraLink, t.Summary)
+			}
+			if t.GithubStatus != "" {
+				str += fmt.Sprintf(" (%s)", t.GithubStatus)
+			}
+			fmt.Println(str)
+		} else {
+			b, _ := json.Marshal(t)
+			fmt.Printf("unpublished: %s\n", string(b))
+		}
+	}
 }
 
 func (c *Campaign) AddTickets(tickets []*Ticket, fileOnly bool) {

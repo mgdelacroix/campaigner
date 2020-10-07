@@ -8,6 +8,7 @@ Command line tool to create and manage community campaigns. `campaigner` takes c
  - `campaigner publish` builds the tickets information and publishes it both to jira and github.
  - `campaigner sync` downloads updated information of the campaign progress.
  - `campaigner status` shows the current campaign data and progression.
+ - `campaigner list` shows the current campaign tickets and their status.
  - `campaigner report` generates reports from the campaign data.
 
 ## Install
