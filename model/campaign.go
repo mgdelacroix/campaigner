@@ -93,17 +93,17 @@ func (c *Campaign) PrintList() {
 		if t.IsPublishedJira() {
 			var str string
 			if t.IsPublishedGithub() {
-				str = fmt.Sprintf("[%s / #%d] %s", t.JiraLink, t.GithubLink, t.Summary)
+				str = fmt.Sprintf("[%s / %s] %s", color.BlueString(t.JiraLink), color.CyanString(fmt.Sprintf("#%d", t.GithubLink)), t.Summary)
 			} else {
-				str = fmt.Sprintf("[%s] %s", t.JiraLink, t.Summary)
+				str = fmt.Sprintf("[%s] %s", color.BlueString(t.JiraLink), t.Summary)
 			}
 			if t.GithubStatus != "" {
-				str += fmt.Sprintf(" (%s)", t.GithubStatus)
+				str += fmt.Sprintf(" (%s)", color.MagentaString(t.GithubStatus))
 			}
 			fmt.Println(str)
 		} else {
 			b, _ := json.Marshal(t)
-			fmt.Printf("unpublished: %s\n", string(b))
+			fmt.Printf("unpublished: %s\n", color.YellowString(string(b)))
 		}
 	}
 }
