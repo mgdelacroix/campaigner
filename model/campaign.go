@@ -88,14 +88,24 @@ func (c *Campaign) PrintStatus() {
 	w.Flush()
 }
 
-func (c *Campaign) PrintList(publishedOnly bool) {
+func (c *Campaign) PrintList(publishedOnly, printLinks bool) {
 	for _, t := range c.Tickets {
 		if t.IsPublishedJira() {
+			jiraLink := t.JiraLink
+			if printLinks {
+				jiraLink = c.GetJiraUrl(t)
+			}
+
 			var str string
 			if t.IsPublishedGithub() {
-				str = fmt.Sprintf("[%s / %s] %s", color.BlueString(t.JiraLink), color.CyanString(fmt.Sprintf("#%d", t.GithubLink)), t.Summary)
+				githubLink := fmt.Sprintf("#%d", t.GithubLink)
+				if printLinks {
+					githubLink = c.GetGithubUrl(t)
+				}
+
+				str = fmt.Sprintf("[%s / %s] %s", color.BlueString(jiraLink), color.CyanString(githubLink), t.Summary)
 			} else {
-				str = fmt.Sprintf("[%s] %s", color.BlueString(t.JiraLink), t.Summary)
+				str = fmt.Sprintf("[%s] %s", color.BlueString(jiraLink), t.Summary)
 			}
 			if t.GithubStatus != "" {
 				if t.IsClosed() {

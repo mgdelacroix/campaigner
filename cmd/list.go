@@ -16,12 +16,14 @@ func ListCmd() *cobra.Command {
 	}
 
 	cmd.Flags().BoolP("published-only", "p", false, "list only published tickets")
+	cmd.Flags().BoolP("links", "l", false, "print full links for jira and github ticket numbers")
 
 	return cmd
 }
 
 func listCmdF(a *app.App, cmd *cobra.Command, _ []string) {
 	publishedOnly, _ := cmd.Flags().GetBool("published-only")
+	printLinks, _ := cmd.Flags().GetBool("links")
 
-	a.Campaign.PrintList(publishedOnly)
+	a.Campaign.PrintList(publishedOnly, printLinks)
 }
