@@ -116,7 +116,7 @@ func (c *Campaign) PrintList(publishedOnly, printLinks bool) {
 			}
 			fmt.Println(str)
 		} else if !publishedOnly {
-			b, _ := json.Marshal(t)
+			b, _ := json.Marshal(t.Data)
 			fmt.Printf("unpublished: %s\n", color.YellowString(string(b)))
 		}
 	}
