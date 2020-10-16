@@ -138,6 +138,11 @@ func (a *App) GithubSync() error {
 	for i, ticket := range tickets {
 		fmt.Printf("\rUpdating ticket %d of %d", i+1, total)
 
+		// ticket is on its final stage, continue
+		if ticket.IsAssigned() && ticket.IsClosed() {
+			continue
+		}
+
 		issue, _, err := a.GithubClient.Issues.Get(context.Background(), owner, repo, ticket.GithubLink)
 		if err != nil {
 			return err
