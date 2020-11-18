@@ -122,12 +122,14 @@ func (c *Campaign) PrintList(publishedOnly, printLinks bool) {
 	}
 }
 
-func (c *Campaign) AddTickets(tickets []*Ticket, fileOnly bool) {
+func (c *Campaign) AddTickets(tickets []*Ticket, fileOnly bool) int {
 	c.Tickets = append(c.Tickets, tickets...)
-	c.RemoveDuplicateTickets(fileOnly)
+	removedTickets := c.RemoveDuplicateTickets(fileOnly)
+	return len(tickets) - removedTickets
 }
 
-func (c *Campaign) RemoveDuplicateTickets(fileOnly bool) {
+func (c *Campaign) RemoveDuplicateTickets(fileOnly bool) int {
+	removedTickets := 0
 	datalessTickets := []*Ticket{}
 	ticketMap := map[string]*Ticket{}
 	for _, t := range c.Tickets {
@@ -140,9 +142,18 @@ func (c *Campaign) RemoveDuplicateTickets(fileOnly bool) {
 		}
 
 		if fileOnly {
+			// a previous ticket for the filename already existed
+			if _, ok := ticketMap[filename]; ok {
+				removedTickets++
+			}
 			ticketMap[filename] = t
 		} else {
-			ticketMap[fmt.Sprintf("%s:%d", filename, lineNo)] = t
+			ticketKey := fmt.Sprintf("%s:%d", filename, lineNo)
+			// a previous ticket for the same key already existed
+			if _, ok := ticketMap[ticketKey]; ok {
+				removedTickets++
+			}
+			ticketMap[ticketKey] = t
 		}
 	}
 
@@ -155,6 +166,7 @@ func (c *Campaign) RemoveDuplicateTickets(fileOnly bool) {
 	}
 
 	c.Tickets = cleanTickets
+	return removedTickets
 }
 
 func (c *Campaign) GetPublishedGithubTickets() []*Ticket {

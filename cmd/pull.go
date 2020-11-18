@@ -22,10 +22,10 @@ func pullCmdF(a *app.App, cmd *cobra.Command, _ []string) {
 		ErrorAndExit(cmd, err)
 	}
 
-	a.Campaign.AddTickets(tickets, false)
+	addedTickets := a.Campaign.AddTickets(tickets, false)
 
 	if err := a.Save(); err != nil {
 		ErrorAndExit(cmd, err)
 	}
-	cmd.Printf("%d tickets have been added\n", len(tickets))
+	cmd.Printf("%d tickets have been added\n", addedTickets)
 }

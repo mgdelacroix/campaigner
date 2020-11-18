@@ -99,12 +99,12 @@ func grepAddCmdF(a *app.App, cmd *cobra.Command, _ []string) {
 	fileOnly, _ := cmd.Flags().GetBool("file-only")
 
 	tickets := parsers.ParseWith(parsers.GREP)
-	a.Campaign.AddTickets(tickets, fileOnly)
+	addedTickets := a.Campaign.AddTickets(tickets, fileOnly)
 
 	if err := a.Save(); err != nil {
 		ErrorAndExit(cmd, err)
 	}
-	cmd.Printf("%d tickets have been added\n", len(tickets))
+	cmd.Printf("%d tickets have been added\n", addedTickets)
 }
 
 func agAddCmdF(_ *cobra.Command, _ []string) error {
@@ -115,12 +115,12 @@ func govetAddCmdF(a *app.App, cmd *cobra.Command, _ []string) {
 	fileOnly, _ := cmd.Flags().GetBool("file-only")
 
 	tickets := parsers.ParseWith(parsers.GOVET)
-	a.Campaign.AddTickets(tickets, fileOnly)
+	addedTickets := a.Campaign.AddTickets(tickets, fileOnly)
 
 	if err := a.Save(); err != nil {
 		ErrorAndExit(cmd, err)
 	}
-	cmd.Printf("%d tickets have been added\n", len(tickets))
+	cmd.Printf("%d tickets have been added\n", addedTickets)
 }
 
 func csvAddCmdF(a *app.App, cmd *cobra.Command, args []string) {

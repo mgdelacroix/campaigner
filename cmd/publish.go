@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"git.ctrlz.es/mgdelacroix/campaigner/app"
+	"git.ctrlz.es/mgdelacroix/campaigner/model"
 
 	"github.com/spf13/cobra"
 )
@@ -38,6 +39,33 @@ func GithubPublishCmd() *cobra.Command {
 	return cmd
 }
 
+func TicketPublishCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "ticket",
+		Short: "Publishes an already existing jira ticket in Github",
+		Long: `This command publishes a ticket that is outside the campaign and already created in jira, into Github.
+
+It is intended to use for standalone Help Wanted tickets that don't fit into a campaing, but nonetheless need to be published in Github and linked back. It does require of a campaign.json file that describes the connection with both the Jira instance and the GitHub repository, but it will never modify it, so the command can be run pointing to a previously existing campaign which connection details match with the ones that apply for the ticket.
+
+Github labels will not be read from the campaign.json file, so they need to be specified with the --label flag if wanted.`,
+		Example: `  # if we don't want any github label to be added to the ticket
+  $ campaigner publish ticket MM-1234
+
+  # if we want to add some labels in github
+  $ campaigner publish ticket MM-1234 --label Tech/Go --label "Help Wanted"
+
+  # if we want to use a campaign file outside the current directory
+  $ campaigner publish ticket MM-1234 --campaign ~/campaigns/standalone.json`,
+		Args: cobra.ExactArgs(1),
+		RunE: withAppE(ticketPublishCmdF),
+	}
+
+	cmd.Flags().StringSliceP("label", "l", []string{}, "the labels to add to the Github issues")
+	cmd.Flags().Bool("dry-run", false, "Print the tickets information instead of publishing them")
+
+	return cmd
+}
+
 func PublishCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "publish",
@@ -48,6 +76,7 @@ func PublishCmd() *cobra.Command {
 	cmd.AddCommand(
 		GithubPublishCmd(),
 		JiraPublishCmd(),
+		TicketPublishCmd(),
 	)
 
 	return cmd
@@ -98,6 +127,46 @@ func githubPublishCmdF(a *app.App, cmd *cobra.Command, _ []string) error {
 			ErrorAndExit(cmd, err)
 		}
 		cmd.Printf("\nBatch of %d tickets successfully published in github\n", batch)
+	}
+
+	return nil
+}
+
+func ticketPublishCmdF(a *app.App, cmd *cobra.Command, args []string) error {
+	labels, _ := cmd.Flags().GetStringSlice("label")
+	dryRun, _ := cmd.Flags().GetBool("dry-run")
+
+	jiraTicketId := args[0]
+
+	jiraIssue, err := a.GetIssue(jiraTicketId)
+	if err != nil {
+		ErrorAndExit(cmd, fmt.Errorf("cannot get jira issue %q: %w", jiraTicketId, err))
+	}
+
+	ticket := &model.Ticket{
+		Summary:     jiraIssue.Fields.Summary,
+		Description: jiraIssue.Fields.Description,
+		JiraLink:    jiraTicketId,
+	}
+	// update the campaign labels only to publish the ticket
+	a.Campaign.Github.Labels = labels
+
+	githubIssue, err := a.PublishInGithub(ticket, dryRun)
+	if err != nil {
+		ErrorAndExit(cmd, fmt.Errorf("cannot publish ticket %q in github: %w", jiraTicketId, err))
+	}
+
+	if dryRun {
+		return nil
+	}
+
+	ticket.GithubLink = githubIssue.GetNumber()
+	ticket.GithubStatus = githubIssue.GetState()
+
+	cmd.Printf("Issue published: https://github.com/%s/issues/%d\n", a.Campaign.Github.Repo, ticket.GithubLink)
+
+	if err := a.UpdateJiraAfterGithub(ticket); err != nil {
+		ErrorAndExit(cmd, fmt.Errorf("error updating Jira info for %q after publishing in Github", jiraTicketId))
 	}
 
 	return nil
