@@ -4,6 +4,9 @@ go 1.13
 
 require (
 	github.com/StevenACoffman/j2m v0.0.0-20190826163711-7d8d00c99217
+	github.com/charmbracelet/bubbles v0.15.0
+	github.com/charmbracelet/bubbletea v0.24.1
+	github.com/charmbracelet/lipgloss v0.7.1
 	github.com/fatih/color v1.9.0
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/google/go-github/v32 v32.1.0

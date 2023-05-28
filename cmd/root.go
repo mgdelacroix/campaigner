@@ -57,6 +57,7 @@ func RootCmd() *cobra.Command {
 		SyncCmd(),
 		ReportCmd(),
 		CompletionCmd(),
+		UICmd(),
 	)
 
 	return cmd
