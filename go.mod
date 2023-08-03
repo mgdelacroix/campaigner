@@ -1,6 +1,6 @@
 module git.ctrlz.es/mgdelacroix/campaigner
 
-go 1.13
+go 1.17
 
 require (
 	github.com/StevenACoffman/j2m v0.0.0-20190826163711-7d8d00c99217
