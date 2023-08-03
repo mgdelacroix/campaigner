@@ -8,7 +8,7 @@ check:
 	golangci-lint run -E gofmt ./...
 
 build:
-	go build -mod=vendor
+	go build
 
 install:
-	go install -mod=vendor
+	go install
