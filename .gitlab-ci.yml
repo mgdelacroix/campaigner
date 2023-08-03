@@ -1,4 +1,4 @@
-image: golang:1.17-buster
+image: golang:1.18-buster
 
 fmt:
   stage: lint
