@@ -8,9 +8,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"git.ctrlz.es/mgdelacroix/campaigner/app"
-	"git.ctrlz.es/mgdelacroix/campaigner/model"
-	"git.ctrlz.es/mgdelacroix/campaigner/parsers"
+	"github.com/mgdelacroix/campaigner/app"
+	"github.com/mgdelacroix/campaigner/model"
+	"github.com/mgdelacroix/campaigner/parsers"
 )
 
 func GrepAddCmd() *cobra.Command {

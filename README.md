@@ -16,7 +16,7 @@ Command line tool to create and manage community campaigns. `campaigner` takes c
 To install `campaigner`, if you have the golang environment set up, you just have to run:
 
 ```sh
-go get git.ctrlz.es/mgdelacroix/campaigner
+go get github.com/mgdelacroix/campaigner
 ```
 
 ## Usage

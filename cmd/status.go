@@ -3,7 +3,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	"git.ctrlz.es/mgdelacroix/campaigner/app"
+	"github.com/mgdelacroix/campaigner/app"
 )
 
 func StatusCmd() *cobra.Command {

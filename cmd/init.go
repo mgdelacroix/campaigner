@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"git.ctrlz.es/mgdelacroix/campaigner/app"
-	"git.ctrlz.es/mgdelacroix/campaigner/model"
+	"github.com/mgdelacroix/campaigner/app"
+	"github.com/mgdelacroix/campaigner/model"
 
 	"github.com/spf13/cobra"
 )

@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"git.ctrlz.es/mgdelacroix/campaigner/app"
+	"github.com/mgdelacroix/campaigner/app"
 
 	"github.com/spf13/cobra"
 )

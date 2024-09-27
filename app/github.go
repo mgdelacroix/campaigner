@@ -9,7 +9,7 @@ import (
 	"os"
 	"text/template"
 
-	"git.ctrlz.es/mgdelacroix/campaigner/model"
+	"github.com/mgdelacroix/campaigner/model"
 
 	"github.com/StevenACoffman/j2m"
 	"github.com/google/go-github/v32/github"

@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
@@ -10,7 +9,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 
-	"git.ctrlz.es/mgdelacroix/campaigner/app"
+	"github.com/mgdelacroix/campaigner/app"
 )
 
 const defaultEditor = "vim"
@@ -82,7 +81,7 @@ func remoteLabelCmdF(a *app.App, cmd *cobra.Command, _ []string) {
 func updateLabelCmdF(a *app.App, cmd *cobra.Command, _ []string) {
 	skipCheck, _ := cmd.Flags().GetBool("skip-check")
 
-	file, err := ioutil.TempFile(os.TempDir(), "campaigner-")
+	file, err := os.CreateTemp("", "campaigner-")
 	if err != nil {
 		ErrorAndExit(cmd, fmt.Errorf("cannot create temp file: %w", err))
 	}
@@ -109,7 +108,7 @@ func updateLabelCmdF(a *app.App, cmd *cobra.Command, _ []string) {
 		ErrorAndExit(cmd, fmt.Errorf("cannot run editor command: %w", err))
 	}
 
-	newLabelBytes, err := ioutil.ReadFile(file.Name())
+	newLabelBytes, err := os.ReadFile(file.Name())
 	if err != nil {
 		ErrorAndExit(cmd, fmt.Errorf("cannot read file: %w", err))
 	}

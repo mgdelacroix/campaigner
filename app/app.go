@@ -3,13 +3,12 @@ package app
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/google/go-github/v32/github"
 	jira "gopkg.in/andygrunwald/go-jira.v1"
 
-	"git.ctrlz.es/mgdelacroix/campaigner/model"
+	"github.com/mgdelacroix/campaigner/model"
 )
 
 type App struct {
@@ -26,7 +25,7 @@ func SaveCampaign(campaign *model.Campaign, path string) error {
 		return err
 	}
 
-	if err := ioutil.WriteFile(path, marshaledCampaign, 0600); err != nil {
+	if err := os.WriteFile(path, marshaledCampaign, 0600); err != nil {
 		return fmt.Errorf("cannot save campaign: %w", err)
 	}
 	return nil
@@ -41,7 +40,7 @@ func (a *App) Load() error {
 		return fmt.Errorf("cannot read campaign: %w", err)
 	}
 
-	fileContents, err := ioutil.ReadFile(a.Path)
+	fileContents, err := os.ReadFile(a.Path)
 	if err != nil {
 		return fmt.Errorf("there was a problem reading the campaign file: %w", err)
 	}
