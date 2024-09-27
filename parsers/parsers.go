@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"git.ctrlz.es/mgdelacroix/campaigner/model"
+	"github.com/mgdelacroix/campaigner/model"
 )
 
 const (

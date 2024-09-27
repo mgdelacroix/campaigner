@@ -1,4 +1,4 @@
-module git.ctrlz.es/mgdelacroix/campaigner
+module github.com/mgdelacroix/campaigner
 
 go 1.22
 

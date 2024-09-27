@@ -8,7 +8,7 @@ import (
 	"strings"
 	"text/template"
 
-	"git.ctrlz.es/mgdelacroix/campaigner/model"
+	"github.com/mgdelacroix/campaigner/model"
 
 	jira "gopkg.in/andygrunwald/go-jira.v1"
 )
