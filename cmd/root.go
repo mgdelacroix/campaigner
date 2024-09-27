@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"git.ctrlz.es/mgdelacroix/campaigner/app"
+	"github.com/mgdelacroix/campaigner/app"
 )
 
 func withApp(f func(*app.App, *cobra.Command, []string)) func(*cobra.Command, []string) {
@@ -56,7 +56,6 @@ func RootCmd() *cobra.Command {
 		PullCmd(),
 		SyncCmd(),
 		ReportCmd(),
-		CompletionCmd(),
 		UICmd(),
 	)
 

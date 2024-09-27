@@ -10,7 +10,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 
-	"git.ctrlz.es/mgdelacroix/campaigner/app"
+	"github.com/mgdelacroix/campaigner/app"
 )
 
 const defaultEditor = "vim"

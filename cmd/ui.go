@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"git.ctrlz.es/mgdelacroix/campaigner/app"
-	"git.ctrlz.es/mgdelacroix/campaigner/model"
+	"github.com/mgdelacroix/campaigner/app"
+	"github.com/mgdelacroix/campaigner/model"
 	"github.com/spf13/cobra"
 
 	"github.com/charmbracelet/bubbles/list"

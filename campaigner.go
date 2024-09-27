@@ -1,7 +1,7 @@
 package main
 
 import (
-	"git.ctrlz.es/mgdelacroix/campaigner/cmd"
+	"github.com/mgdelacroix/campaigner/cmd"
 )
 
 func main() {
