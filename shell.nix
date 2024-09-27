@@ -2,7 +2,7 @@
 pkgs.mkShell {
   buildInputs = with pkgs; [
     gnumake
-    go_1_18
+    go
     golangci-lint
   ];
   shellHook = ''
