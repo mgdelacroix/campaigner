@@ -123,10 +123,11 @@ func githubPublishCmdF(a *app.App, cmd *cobra.Command, _ []string) error {
 		}
 		cmd.Printf("\nAll %d tickets successfully published in github\n", count)
 	} else {
-		if err := a.PublishBatchInGithub(cmd.OutOrStdout(), batch, dryRun); err != nil {
+		count, err := a.PublishBatchInGithub(cmd.OutOrStdout(), batch, dryRun)
+		if err != nil {
 			ErrorAndExit(cmd, err)
 		}
-		cmd.Printf("\nBatch of %d tickets successfully published in github\n", batch)
+		cmd.Printf("\nBatch of %d tickets successfully published in github\n", count)
 	}
 
 	return nil
