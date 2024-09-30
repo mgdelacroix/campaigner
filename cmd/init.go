@@ -73,6 +73,7 @@ func initCmdF(cmd *cobra.Command, _ []string) {
 		return val
 	}
 
+	name := getStringFlagOrAskIfEmpty("name", "Campaign name:")
 	jiraUsername := getStringFlagOrAskIfEmpty("jira-username", "JIRA username:")
 	jiraToken := getStringFlagOrAskIfEmpty("jira-token", "JIRA password or token:")
 	githubToken := getStringFlagOrAskIfEmpty("github-token", "GitHub token:")
@@ -87,24 +88,23 @@ func initCmdF(cmd *cobra.Command, _ []string) {
 
 	project := strings.Split(epic, "-")[0]
 
-	campaign := &model.Campaign{
-		Jira: model.ConfigJira{
-			Url:       url,
-			Username:  jiraUsername,
-			Token:     jiraToken,
-			Project:   project,
-			Epic:      epic,
-			IssueType: issueType,
-		},
-		Github: model.ConfigGithub{
-			Token:  githubToken,
-			Repo:   repo,
-			Labels: labels,
-		},
-		Summary:        summary,
-		IssueTemplate:  issueTemplate,
-		FooterTemplate: footerTemplate,
+	campaign := model.NewCampaign(name)
+	campaign.Jira = model.ConfigJira{
+		Url:       url,
+		Username:  jiraUsername,
+		Token:     jiraToken,
+		Project:   project,
+		Epic:      epic,
+		IssueType: issueType,
 	}
+	campaign.Github = model.ConfigGithub{
+		Token:  githubToken,
+		Repo:   repo,
+		Labels: labels,
+	}
+	campaign.Summary = summary
+	campaign.IssueTemplate = issueTemplate
+	campaign.FooterTemplate = footerTemplate
 	if err := app.SaveCampaign(campaign, campaignPath); err != nil {
 		ErrorAndExit(cmd, err)
 	}

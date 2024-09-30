@@ -104,7 +104,7 @@ func uiCmdF(a *app.App, cmd *cobra.Command, _ []string) error {
 	delegate := list.NewDefaultDelegate()
 
 	m := uiModel{list: list.New(items, delegate, 0, 0)}
-	m.list.Title = fmt.Sprintf("Campaign: %q", a.Campaign.Summary)
+	m.list.Title = fmt.Sprintf("Campaign: %q", a.Campaign.GetName())
 
 	p := tea.NewProgram(m)
 	if _, err := p.Run(); err != nil {
