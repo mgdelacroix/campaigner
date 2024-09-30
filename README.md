@@ -41,6 +41,7 @@ Once we have both files, we can run `campaigner init` to create the campaign. Th
 
 ```sh
 $ campaigner init \
+    --name Remove ToDo comments
     --jira-username johndoe \
     --jira-token secret \
     --github-token TOKEN \
@@ -76,8 +77,7 @@ Once the campaign is ready, we can see its status running `campaigner status`:
 
 ```sh
 $ campaigner status
-Current campaign for johndoe/testrepo with summary
-Remove the ToDo comment in {{.filename}}:{{.lineNo}}
+Current Remove ToDo comments for johndoe/testrepo
 
          67     -         total tickets
          24   35%     published on Jira

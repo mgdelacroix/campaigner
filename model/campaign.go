@@ -29,12 +29,28 @@ type ConfigGithub struct {
 
 // ToDo: add key-value extra params as a map to allow for customfield_whatever = team
 type Campaign struct {
+	Name           string       `json:"name"`
 	Jira           ConfigJira   `json:"jira"`
 	Github         ConfigGithub `json:"github"`
 	Summary        string       `json:"summary"`
 	IssueTemplate  string       `json:"issue_template"`
 	FooterTemplate string       `json:"footer_template"`
 	Tickets        []*Ticket    `json:"tickets,omitempty"`
+}
+
+func NewCampaign(name string) *Campaign {
+	return &Campaign{
+		Name: name,
+		Tickets: []*Ticket{},
+	}
+}
+
+func (c *Campaign) GetName() string {
+	if c.Name == "" {
+		// For backwards compatibility
+		return c.Summary
+	}
+	return c.Name
 }
 
 func (c *Campaign) NextJiraUnpublishedTicket() *Ticket {
@@ -77,7 +93,7 @@ func (c *Campaign) PrintStatus() {
 		}
 	}
 
-	fmt.Printf("Current campaign for %s with summary\n%s\n\n", color.GreenString(c.Github.Repo), color.CyanString(c.Summary))
+	fmt.Printf("Campaign %s for %s\n\n", color.CyanString(c.GetName()), color.GreenString(c.Github.Repo))
 	if totalTickets == 0 {
 		fmt.Println("There are no tickets in the campaign. Run \"campaigner add --help\" to find out how to add them.")
 		return
