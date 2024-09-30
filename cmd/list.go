@@ -16,7 +16,7 @@ func ListCmd() *cobra.Command {
 	}
 
 	cmd.Flags().BoolP("published-only", "p", false, "list only published tickets")
-	cmd.Flags().BoolP("links", "l", false, "print full links for jira and github ticket numbers")
+	cmd.Flags().BoolP("links", "l", false, "print full links for Jira and GitHub ticket numbers")
 
 	return cmd
 }
