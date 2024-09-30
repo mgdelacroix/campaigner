@@ -40,6 +40,7 @@ type Campaign struct {
 
 func NewCampaign(name string) *Campaign {
 	return &Campaign{
+		Name: name,
 		Tickets: []*Ticket{},
 	}
 }
