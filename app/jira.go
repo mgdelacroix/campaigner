@@ -211,7 +211,7 @@ func (a *App) GetTicketsFromJiraEpic() ([]*model.Ticket, error) {
 
 	tickets := []*model.Ticket{}
 	for _, issue := range issues {
-		// ToDo: if they have github link, fill and fetch github data
+		// ToDo: if they have GitHub link, fill and fetch GitHub data
 		ticket := &model.Ticket{
 			JiraLink:    issue.Key,
 			JiraStatus:  issue.Fields.Status.Name,

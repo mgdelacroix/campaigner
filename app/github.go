@@ -96,7 +96,7 @@ func (a *App) PublishNextInGithub(w io.Writer, dryRun bool) (bool, error) {
 	fmt.Fprintf(w, "Issue published: https://github.com/%s/issues/%d\n", a.Campaign.Github.Repo, ticket.GithubLink)
 
 	if err := a.UpdateJiraAfterGithub(ticket); err != nil {
-		fmt.Fprintf(os.Stderr, "error updating Jira info for %s after publishing in Github\n", ticket.JiraLink)
+		fmt.Fprintf(os.Stderr, "error updating Jira info for %s after publishing on Github\n", ticket.JiraLink)
 	}
 
 	return true, nil

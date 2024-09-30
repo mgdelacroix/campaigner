@@ -34,16 +34,16 @@ func InitCmd() *cobra.Command {
 		Run:  initCmdF,
 	}
 
-	cmd.Flags().String("jira-username", "", "the jira username")
-	cmd.Flags().String("jira-token", "", "the jira token or password")
-	cmd.Flags().String("github-token", "", "the github token")
-	cmd.Flags().StringP("url", "u", "", "the jira server URL")
+	cmd.Flags().String("jira-username", "", "the Jira username")
+	cmd.Flags().String("jira-token", "", "the Jira token or password")
+	cmd.Flags().String("github-token", "", "the GitHub token")
+	cmd.Flags().StringP("url", "u", "", "the Jira server URL")
 	cmd.Flags().StringP("epic", "e", "", "the epic id to associate this campaign with")
-	cmd.Flags().StringP("repository", "r", "", "the github repository")
+	cmd.Flags().StringP("repository", "r", "", "the GitHub repository")
 	cmd.Flags().StringSliceP("label", "l", []string{}, "the labels to add to the Github issues")
 	cmd.Flags().StringP("summary", "s", "", "the summary of the tickets")
 	cmd.Flags().StringP("issue-template", "t", "", "the template path for the description of the tickets")
-	cmd.Flags().StringP("footer-template", "f", "", "the template path to append to the github issues as a footer")
+	cmd.Flags().StringP("footer-template", "f", "", "the template path to append to the GitHub issues as a footer")
 	cmd.Flags().StringP("issue-type", "i", "Story", "the issue type to create the tickets as")
 
 	return cmd
@@ -73,11 +73,11 @@ func initCmdF(cmd *cobra.Command, _ []string) {
 		return val
 	}
 
-	jiraUsername := getStringFlagOrAskIfEmpty("jira-username", "JIRA username:")
-	jiraToken := getStringFlagOrAskIfEmpty("jira-token", "JIRA password or token:")
+	jiraUsername := getStringFlagOrAskIfEmpty("jira-username", "Jira username:")
+	jiraToken := getStringFlagOrAskIfEmpty("jira-token", "Jira password or token:")
 	githubToken := getStringFlagOrAskIfEmpty("github-token", "GitHub token:")
-	url := getStringFlagOrAskIfEmpty("url", "JIRA server URL:")
-	epic := getStringFlagOrAskIfEmpty("epic", "JIRA epic:")
+	url := getStringFlagOrAskIfEmpty("url", "Jira server URL:")
+	epic := getStringFlagOrAskIfEmpty("epic", "Jira epic:")
 	repo := getStringFlagOrAskIfEmpty("repository", "GitHub repository:")
 	summary := getStringFlagOrAskIfEmpty("summary", "Ticket summary template:")
 	issueTemplate := getStringFlagOrAskIfEmpty("issue-template", "Ticket description template path:")

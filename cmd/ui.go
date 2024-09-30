@@ -69,10 +69,10 @@ func renderTicketDescription(ticket *model.Ticket) string {
 		status = fmt.Sprintf("assigned [%s]", ticket.GithubAssignee)
 		bgColor = "#146300"
 	} else if ticket.IsPublishedGithub() {
-		status = "github"
+		status = "GitHub"
 		bgColor = "#171515"
 	} else if ticket.IsPublishedJira() {
-		status = "jira"
+		status = "Jira"
 		bgColor = "#0052CC"
 	} else {
 		status = "unpublished"
