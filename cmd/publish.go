@@ -163,8 +163,7 @@ func ticketPublishCmdF(a *app.App, cmd *cobra.Command, args []string) error {
 	ticket.GithubLink = githubIssue.GetNumber()
 	ticket.GithubStatus = githubIssue.GetState()
 
-	url := a.Campaign.GetGithubUrl(ticket)
-	cmd.Printf("Issue published: %s\n", url)
+	cmd.Printf("Issue published: %s\n", a.Campaign.GetGithubUrl(ticket))
 
 	if err := a.UpdateJiraAfterGithub(ticket); err != nil {
 		ErrorAndExit(cmd, fmt.Errorf("error updating Jira info for %q after publishing on Github", jiraTicketId))
