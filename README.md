@@ -77,7 +77,7 @@ Once the campaign is ready, we can see its status running `campaigner status`:
 
 ```sh
 $ campaigner status
-Current Remove ToDo comments for johndoe/testrepo
+Campaign Remove ToDo comments for johndoe/testrepo
 
          67     -         total tickets
          24   35%     published on Jira
