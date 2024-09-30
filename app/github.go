@@ -117,17 +117,19 @@ func (a *App) PublishAllInGithub(w io.Writer, dryRun bool) (int, error) {
 	return count, nil
 }
 
-func (a *App) PublishBatchInGithub(w io.Writer, batch int, dryRun bool) error {
+func (a *App) PublishBatchInGithub(w io.Writer, batch int, dryRun bool) (int, error) {
+	count := 0
 	for i := 1; i <= batch; i++ {
 		next, err := a.PublishNextInGithub(w, dryRun)
 		if err != nil {
-			return err
+			return count, err
 		}
 		if !next {
-			return nil
+			break
 		}
+		count++
 	}
-	return nil
+	return count, nil
 }
 
 func (a *App) GithubSync() error {

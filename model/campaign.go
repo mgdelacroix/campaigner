@@ -47,9 +47,13 @@ func (c *Campaign) NextJiraUnpublishedTicket() *Ticket {
 }
 
 func (c *Campaign) NextGithubUnpublishedTicket() *Ticket {
-	for _, ticket := range c.Tickets {
-		if ticket.IsPublishedJira() && !ticket.IsPublishedGithub() {
-			return ticket
+	for i, ticket := range c.Tickets {
+		if !ticket.IsPublishedGithub() {
+			if ticket.IsPublishedJira() {
+				return ticket
+			} else {
+				fmt.Printf("Skipping ticket %d as it is not published to JIRA\n", i)
+			}
 		}
 	}
 	return nil
