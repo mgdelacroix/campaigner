@@ -41,7 +41,7 @@ Once we have both files, we can run `campaigner init` to create the campaign. Th
 
 ```sh
 $ campaigner init \
-    -- name Remove ToDo comments
+    --name Remove ToDo comments
     --jira-username johndoe \
     --jira-token secret \
     --github-token TOKEN \
