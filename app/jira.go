@@ -117,6 +117,15 @@ func (a *App) PublishInJira(ticket *model.Ticket, dryRun bool) (*jira.Issue, err
 		return nil, err
 	}
 
+	if a.Campaign.Jira.Assignee != "" {
+		_, err = a.JiraClient.Issue.UpdateAssignee(newIssue.Key, &jira.User{
+			AccountID: a.Campaign.Jira.Assignee,
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return newIssue, nil
 }
 

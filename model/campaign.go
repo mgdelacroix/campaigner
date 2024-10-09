@@ -19,6 +19,7 @@ type ConfigJira struct {
 	Project   string `json:"project"`
 	Epic      string `json:"epic"`
 	IssueType string `json:"issue_type"`
+	Assignee  string `json:"assignee"`
 }
 
 type ConfigGithub struct {
@@ -40,7 +41,7 @@ type Campaign struct {
 
 func NewCampaign(name string) *Campaign {
 	return &Campaign{
-		Name: name,
+		Name:    name,
 		Tickets: []*Ticket{},
 	}
 }
