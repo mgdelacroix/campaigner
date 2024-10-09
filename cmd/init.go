@@ -36,6 +36,7 @@ func InitCmd() *cobra.Command {
 
 	cmd.Flags().String("jira-username", "", "the Jira username")
 	cmd.Flags().String("jira-token", "", "the Jira token or password")
+	cmd.Flags().String("jira-assignee", "", "Account ID of the Jira assignee")
 	cmd.Flags().String("github-token", "", "the GitHub token")
 	cmd.Flags().StringP("url", "u", "", "the Jira server URL")
 	cmd.Flags().StringP("epic", "e", "", "the epic id to associate this campaign with")
@@ -76,6 +77,7 @@ func initCmdF(cmd *cobra.Command, _ []string) {
 	name := getStringFlagOrAskIfEmpty("name", "Campaign name:")
 	jiraUsername := getStringFlagOrAskIfEmpty("jira-username", "Jira username:")
 	jiraToken := getStringFlagOrAskIfEmpty("jira-token", "Jira password or token:")
+	jiraAssigne := getStringFlagOrAskIfEmpty("jira-assignee", "Jira assignee (optional):")
 	githubToken := getStringFlagOrAskIfEmpty("github-token", "GitHub token:")
 	url := getStringFlagOrAskIfEmpty("url", "Jira server URL:")
 	epic := getStringFlagOrAskIfEmpty("epic", "Jira epic:")
@@ -96,6 +98,7 @@ func initCmdF(cmd *cobra.Command, _ []string) {
 		Project:   project,
 		Epic:      epic,
 		IssueType: issueType,
+		Assignee:  jiraAssigne,
 	}
 	campaign.Github = model.ConfigGithub{
 		Token:  githubToken,
