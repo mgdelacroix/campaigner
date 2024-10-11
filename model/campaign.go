@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 	"text/tabwriter"
 	"text/template"
@@ -40,7 +41,7 @@ type Campaign struct {
 
 func NewCampaign(name string) *Campaign {
 	return &Campaign{
-		Name: name,
+		Name:    name,
 		Tickets: []*Ticket{},
 	}
 }
@@ -78,6 +79,8 @@ func (c *Campaign) NextGithubUnpublishedTicket() *Ticket {
 func (c *Campaign) PrintStatus() {
 	totalTickets := len(c.Tickets)
 	var totalPublishedJira, totalPublishedGithub, totalAssigned, totalClosed int
+
+	contributions := make(map[string]int)
 	for _, t := range c.Tickets {
 		if t.IsPublishedJira() {
 			totalPublishedJira++
@@ -87,11 +90,21 @@ func (c *Campaign) PrintStatus() {
 					totalAssigned++
 					if t.IsClosed() {
 						totalClosed++
+						contributions[t.GithubAssignee]++
 					}
 				}
 			}
 		}
 	}
+
+	var contributors []string
+	for c := range contributions {
+		contributors = append(contributors, c)
+	}
+
+	sort.Slice(contributors, func(i, j int) bool {
+		return contributions[contributors[i]] > contributions[contributors[j]]
+	})
 
 	fmt.Printf("Campaign %s for %s\n\n", color.CyanString(c.GetName()), color.GreenString(c.Github.Repo))
 	if totalTickets == 0 {
@@ -100,11 +113,19 @@ func (c *Campaign) PrintStatus() {
 	}
 
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 3, ' ', tabwriter.AlignRight)
+	fmt.Fprintf(w, "      Stats\n")
 	fmt.Fprintf(w, "      %d\t-\ttotal tickets\t\n", totalTickets)
 	fmt.Fprintf(w, "      %d\t%d%%\tpublished on Jira\t\n", totalPublishedJira, totalPublishedJira*100/totalTickets)
 	fmt.Fprintf(w, "      %d\t%d%%\tpublished on GitHub\t\n", totalPublishedGithub, totalPublishedGithub*100/totalTickets)
 	fmt.Fprintf(w, "      %d\t%d%%\tassigned\t\n", totalAssigned, totalAssigned*100/totalTickets)
 	fmt.Fprintf(w, "      %d\t%d%%\tclosed\t\n\n", totalClosed, totalClosed*100/totalTickets)
+	w.Flush()
+
+	fmt.Fprintf(w, "      Contributors\n")
+	for _, c := range contributors {
+		fmt.Fprintf(w, "      %d\t %s\n", contributions[c], c)
+	}
+
 	w.Flush()
 }
 
