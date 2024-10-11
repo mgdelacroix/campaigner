@@ -76,7 +76,7 @@ func (c *Campaign) NextGithubUnpublishedTicket() *Ticket {
 	return nil
 }
 
-func (c *Campaign) PrintStatus() {
+func (c *Campaign) PrintStatus(md bool) {
 	totalTickets := len(c.Tickets)
 	var totalPublishedJira, totalPublishedGithub, totalAssigned, totalClosed int
 
@@ -106,27 +106,40 @@ func (c *Campaign) PrintStatus() {
 		return contributions[contributors[i]] > contributions[contributors[j]]
 	})
 
-	fmt.Printf("Campaign %s for %s\n\n", color.CyanString(c.GetName()), color.GreenString(c.Github.Repo))
-	if totalTickets == 0 {
-		fmt.Println("There are no tickets in the campaign. Run \"campaigner add --help\" to find out how to add them.")
-		return
+	if md {
+		fmt.Printf("# %s Campaign Update\n", c.GetName())
+		fmt.Print("#community-campaign\n")
+		fmt.Printf("- %d tickets opened\n", totalPublishedGithub)
+		fmt.Printf("- %d tickets assigned\n", totalAssigned)
+		fmt.Printf("- %d tickets closed\n", totalClosed)
+		fmt.Print("\n")
+		fmt.Print("\n")
+		for _, c := range contributors {
+			fmt.Printf("- [%[1]s](https://github.com/%[1]s): %[2]d\n", c, contributions[c])
+		}
+	} else {
+		fmt.Printf("Campaign %s for %s\n\n", color.CyanString(c.GetName()), color.GreenString(c.Github.Repo))
+		if totalTickets == 0 {
+			fmt.Println("There are no tickets in the campaign. Run \"campaigner add --help\" to find out how to add them.")
+			return
+		}
+
+		w := tabwriter.NewWriter(os.Stdout, 0, 0, 3, ' ', tabwriter.AlignRight)
+		fmt.Fprintf(w, "      Stats\n")
+		fmt.Fprintf(w, "      %d\t-\ttotal tickets\t\n", totalTickets)
+		fmt.Fprintf(w, "      %d\t%d%%\tpublished on Jira\t\n", totalPublishedJira, totalPublishedJira*100/totalTickets)
+		fmt.Fprintf(w, "      %d\t%d%%\tpublished on GitHub\t\n", totalPublishedGithub, totalPublishedGithub*100/totalTickets)
+		fmt.Fprintf(w, "      %d\t%d%%\tassigned\t\n", totalAssigned, totalAssigned*100/totalTickets)
+		fmt.Fprintf(w, "      %d\t%d%%\tclosed\t\n\n", totalClosed, totalClosed*100/totalTickets)
+		w.Flush()
+
+		fmt.Fprintf(w, "      Contributors\n")
+		for _, c := range contributors {
+			fmt.Fprintf(w, "      %d\t %s\n", contributions[c], c)
+		}
+
+		w.Flush()
 	}
-
-	w := tabwriter.NewWriter(os.Stdout, 0, 0, 3, ' ', tabwriter.AlignRight)
-	fmt.Fprintf(w, "      Stats\n")
-	fmt.Fprintf(w, "      %d\t-\ttotal tickets\t\n", totalTickets)
-	fmt.Fprintf(w, "      %d\t%d%%\tpublished on Jira\t\n", totalPublishedJira, totalPublishedJira*100/totalTickets)
-	fmt.Fprintf(w, "      %d\t%d%%\tpublished on GitHub\t\n", totalPublishedGithub, totalPublishedGithub*100/totalTickets)
-	fmt.Fprintf(w, "      %d\t%d%%\tassigned\t\n", totalAssigned, totalAssigned*100/totalTickets)
-	fmt.Fprintf(w, "      %d\t%d%%\tclosed\t\n\n", totalClosed, totalClosed*100/totalTickets)
-	w.Flush()
-
-	fmt.Fprintf(w, "      Contributors\n")
-	for _, c := range contributors {
-		fmt.Fprintf(w, "      %d\t %s\n", contributions[c], c)
-	}
-
-	w.Flush()
 }
 
 func (c *Campaign) PrintList(publishedOnly, printLinks bool) {
