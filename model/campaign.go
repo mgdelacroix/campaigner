@@ -20,6 +20,7 @@ type ConfigJira struct {
 	Project   string `json:"project"`
 	Epic      string `json:"epic"`
 	IssueType string `json:"issue_type"`
+	Assignee  string `json:"assignee"`
 }
 
 type ConfigGithub struct {
