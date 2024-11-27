@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"sort"
 	"strings"
 	"text/tabwriter"
 	"text/template"
@@ -98,14 +97,7 @@ func (c *Campaign) PrintStatus(md bool) {
 		}
 	}
 
-	var contributors []string
-	for c := range contributions {
-		contributors = append(contributors, c)
-	}
-
-	sort.Slice(contributors, func(i, j int) bool {
-		return contributions[contributors[i]] > contributions[contributors[j]]
-	})
+	contributors := c.Contritutors()
 
 	if md {
 		fmt.Printf("# %s Campaign Update\n", c.GetName())
@@ -116,7 +108,7 @@ func (c *Campaign) PrintStatus(md bool) {
 		fmt.Print("\n")
 		fmt.Print("\n")
 		for _, c := range contributors {
-			fmt.Printf("- [%[1]s](https://github.com/%[1]s): %[2]d\n", c, contributions[c])
+			fmt.Printf("- [%[1]s](https://github.com/%[1]s): %[2]d\n", c.Username, c.Contributions)
 		}
 	} else {
 		fmt.Printf("Campaign %s for %s\n\n", color.CyanString(c.GetName()), color.GreenString(c.Github.Repo))
@@ -136,7 +128,7 @@ func (c *Campaign) PrintStatus(md bool) {
 
 		fmt.Fprintf(w, "      Contributors\n")
 		for _, c := range contributors {
-			fmt.Fprintf(w, "      %d\t %s\n", contributions[c], c)
+			fmt.Fprintf(w, "      %d\t %s\n", c.Contributions, c.Username)
 		}
 
 		w.Flush()

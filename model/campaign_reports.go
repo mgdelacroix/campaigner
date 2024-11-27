@@ -7,13 +7,13 @@ import (
 	"text/tabwriter"
 )
 
-type Contritutor struct {
+type Contibutor struct {
 	Username      string
 	Contributions int
 }
 
 func (c *Campaign) PrintUserReport() {
-	contributors := c.Contritutor()
+	contributors := c.Contritutors()
 
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 3, ' ', tabwriter.AlignRight)
 	fmt.Fprintln(w, "GitHub username\tTickets closed\t")
@@ -27,7 +27,7 @@ func (c *Campaign) PrintUserReport() {
 	fmt.Println()
 }
 
-func (c *Campaign) Contritutor() []Contritutor {
+func (c *Campaign) Contritutors() []Contibutor {
 	contributions := map[string]int{}
 	for _, ticket := range c.Tickets {
 		if !ticket.IsClosed() {
@@ -44,9 +44,9 @@ func (c *Campaign) Contritutor() []Contritutor {
 		}
 	}
 
-	contributors := make([]Contritutor, 0, len(contributions))
+	contributors := make([]Contibutor, 0, len(contributions))
 	for user, count := range contributions {
-		contributors = append(contributors, Contritutor{Username: user, Contributions: count})
+		contributors = append(contributors, Contibutor{Username: user, Contributions: count})
 	}
 	sort.Slice(contributors, func(i, j int) bool {
 		return contributors[i].Contributions > contributors[j].Contributions
